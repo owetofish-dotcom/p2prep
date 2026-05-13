@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRINCE2 Foundation — Exam Preparation</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:ital,wght@0,400;0,500;1,400&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { 
+    font-family: 'Lora', 'Georgia', serif; 
+     
+     
+    min-height: 100vh; 
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4, .nav-btn, .btn, .stat-num, .stat-label, .badge, .q-category, .q-number, .cat-name, .cat-count, .mode-card h3, .exam-timer, .result-circle {
+    font-family: 'Inter', -apple-system, sans-serif;
+  }
+  .header { padding: 48px 20px 24px; text-align: center; max-width: 800px; margin: 0 auto; border-bottom: 1px solid #EAE6DF; }
+  .header h1 { font-size: 2.4rem;  font-weight: 500; letter-spacing: -0.02em; margin-bottom: 8px; }
+  .header p {  font-size: 1.1rem; }
+  
+  .nav { display: flex; justify-content: center; gap: 8px; padding: 20px 20px;  overflow-x: auto; max-width: 800px; margin: 0 auto; }
+  .nav-btn {   border: 1px solid transparent; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-size: 0.95rem; font-weight: 500; transition: all 0.2s; white-space: nowrap; }
+  .nav-btn:hover {   }
+  .nav-btn.active {   font-weight: 600; }
+  
+  .screen { display: none; padding: 40px 20px 100px; max-width: 800px; margin: 0 auto; animation: fadeIn 0.3s; }
+  .screen.active { display: block; }
+  h2 { font-size: 2rem; margin-bottom: 8px;  font-weight: 500; letter-spacing: -0.02em; }
+  .subtitle {  margin-bottom: 40px; font-size: 1.15rem; font-family: 'Inter', sans-serif;}
+  
+  .btn { padding: 12px 24px; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; font-weight: 500; transition: all 0.2s; font-family: 'Inter', sans-serif;}
+  .btn-primary {   }
+  .btn-primary:hover {  }
+  .btn-secondary {   }
+  .btn-secondary:hover {  }
+  .btn-danger {   }
+  .btn-danger:hover {  }
+  .q-actions { display: flex; gap: 12px; margin-top: 24px; }
+  
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; margin-bottom: 40px; }
+  .stat-card {  border: 1px solid #EAE6DF; border-radius: 16px; padding: 24px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.02); transition: transform 0.2s; }
+  .stat-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.04); }
+  .stat-num { font-size: 2.4rem; font-weight: 600;  margin-bottom: 4px; letter-spacing: -0.02em;}
+  .stat-label { font-size: 0.85rem;  text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500;}
+
+  .mode-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 48px; }
+  @media (max-width: 600px) { .mode-cards { grid-template-columns: 1fr; } }
+  .mode-card {  border: 1px solid #EAE6DF; border-radius: 16px; padding: 32px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+  .mode-card:hover { border- transform: translateY(-2px); box-shadow: 0 8px 20px rgba(218,119,86,0.08); }
+  .mode-icon { font-size: 2.5rem; margin-bottom: 16px; }
+  .mode-card h3 {  margin-bottom: 8px; font-size: 1.4rem; font-weight: 600; letter-spacing: -0.01em;}
+  .mode-card p { font-size: 1.05rem;  }
+  
+  .category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+  .cat-btn {  border: 1px solid #EAE6DF; border-radius: 16px; padding: 20px; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
+  .cat-btn:hover { border-  }
+  .cat-name { font-weight: 500; font-size: 1.1rem; margin-bottom: 6px;  }
+  .cat-count { font-size: 0.85rem;  margin-bottom: 16px; }
+  .cat-progress {  height: 6px; border-radius: 4px; overflow: hidden; width: 100%; }
+  .cat-bar {  height: 100%; transition: width 0.3s; }
+  
+  .q-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+  .q-category {   padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.02em; text-transform: uppercase; border: 1px solid #EAE6DF;}
+  .q-number {  font-size: 1rem; }
+  .progress-bar {  height: 6px; border-radius: 3px; margin-bottom: 40px; overflow: hidden; }
+  .progress-fill {  height: 100%; transition: width 0.3s ease; }
+  .question-text { font-size: 1.5rem; font-weight: 400; margin-bottom: 32px; line-height: 1.5;  letter-spacing: -0.01em;}
+  
+  .options { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
+  .option {  border: 1px solid #EAE6DF; border-radius: 12px; padding: 18px 24px; cursor: pointer; display: flex; align-items: center; transition: all 0.2s; font-family: 'Inter', sans-serif; font-size: 1.05rem;  box-shadow: 0 2px 6px rgba(0,0,0,0.01); }
+  .option:hover {  border- }
+  .option.selected { border-  font-weight: 500; }
+  .option.correct { border-   }
+  .option.wrong { border-   }
+  .option.show-correct { border- border-width: 2px; }
+  .option.answered { pointer-events: none; }
+  .option-letter {   width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 600; margin-right: 16px; font-size: 0.95rem; flex-shrink: 0; }
+  
+  .explanation { display: none;  border-left: 4px solid #4A8B5D; border-radius: 0 12px 12px 0; padding: 24px 32px; margin-bottom: 32px; font-size: 1.15rem;  line-height: 1.6; }
+  .explanation.show { display: block; animation: slideDown 0.3s ease; }
+  
+  .info-box {  border: 1px solid #EAE6DF; border-radius: 16px; padding: 32px; margin: 24px 0; font-size: 1.1rem;  line-height: 1.7; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+  .info-box h4 {  font-size: 1.25rem; margin-bottom: 20px; font-weight: 600; letter-spacing: -0.01em;}
+  .info-box strong {  font-weight: 600; }
+  .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; margin: 4px 4px 4px 0; border: 1px solid #EAE6DF; }
+  .badge-blue {   border- }
+  .badge-green {   border- }
+  .badge-orange {   border- }
+
+  .exam-timer { font-size: 2.4rem; text-align: center; font-weight: 600;  margin-bottom: 24px; letter-spacing: -0.02em;}
+  .exam-timer.warning {  }
+  .exam-timer.critical {  animation: pulse 1s infinite; }
+  .result-circle { width: 160px; height: 160px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 24px; border: 6px solid #EAE6DF; }
+  .result-circle.pass { border-  }
+  .result-circle.fail { border-  }
+  .result-circle span { font-size: 2.8rem; font-weight: 600; line-height: 1; letter-spacing: -0.02em;}
+  .result-circle small { font-size: 1rem; font-weight: 600; margin-top: 4px; letter-spacing: 0.05em;}
+  
+  .rb-card {  border: 1px solid #EAE6DF; border-radius: 12px; padding: 16px 20px; margin-bottom: 12px; display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 16px; font-family: 'Inter', sans-serif; box-shadow: 0 2px 4px rgba(0,0,0,0.01);}
+  .rb-cat { font-weight: 500; font-size: 1rem; }
+  .rb-score { font-weight: 600; font-size: 1.1rem; }
+  .rb-bar { grid-column: 1 / -1;  height: 6px; border-radius: 4px; overflow: hidden; margin-top: 4px; }
+  .rb-fill { height: 100%; border-radius: 4px; }
+  
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>PRINCE2 Foundation</h1>
+  <p>Comprehensive exam preparation · <span id="totalQ">0</span> questions</p>
+</div>
+
+<div class="nav">
+  <button class="nav-btn active" onclick="showScreen('home')">Home</button>
+  <button class="nav-btn" onclick="state.studyQueue.length > 0 ? showScreen('study') : startStudy('all')">Study Mode</button>
+  <button class="nav-btn" onclick="showScreen('exam')">Mock Exam</button>
+  <button class="nav-btn" onclick="showScreen('theory')">Theory</button>
+  <button class="nav-btn" onclick="showScreen('stats')">Statistics</button>
+</div>
+
+<!-- HOME -->
+<div id="screen-home" class="screen active">
+  <h2>Welcome!</h2>
+  <p class="subtitle">Prepare for the PRINCE2 Foundation exam</p>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-num" id="stat-total">0</div>
+      <div class="stat-label">Total Questions</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-answered">0</div>
+      <div class="stat-label">Answered</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-correct">0%</div>
+      <div class="stat-label">Accuracy</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-exams">0</div>
+      <div class="stat-label">Mock Exams</div>
+    </div>
+  </div>
+
+  <div class="mode-cards">
+    <div class="mode-card" onclick="startStudy('all')">
+      <div class="mode-icon">📚</div>
+      <h3>Study Mode</h3>
+      <p>Questions with explanations after each answer. Learn at your own pace.</p>
+    </div>
+    <div class="mode-card" onclick="startExam()">
+      <div class="mode-icon">⏱️</div>
+      <h3>Mock Exam</h3>
+      <p>60 questions, 60 minutes. Simulation of the real PRINCE2 Foundation exam.</p>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <h4>PRINCE2 Foundation Exam Format</h4>
+    <span class="badge badge-blue">60 questions</span>
+    <span class="badge badge-blue">60 minutes</span>
+    <span class="badge badge-green">Pass mark: 55% (33/60)</span>
+    <span class="badge badge-orange">Closed book</span>
+    <br><br>
+    The exam consists of multiple-choice questions (1 of 4 answers). There are no negative marks for incorrect answers.
+  </div>
+
+  <h2 style="margin-top:24px">Study by Category</h2>
+  <div class="category-grid" id="cat-grid"></div>
+</div>
+
+<!-- STUDY -->
+<div id="screen-study" class="screen">
+  <div class="q-header">
+    <span class="q-category" id="study-cat"></span>
+    <span class="q-number" id="study-num"></span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="study-progress"></div></div>
+  <div class="question-text" id="study-question"></div>
+  <div class="options" id="study-options"></div>
+  <div class="explanation" id="study-explanation"></div>
+  <div class="q-actions">
+    <button class="btn btn-secondary" id="study-hint-btn" onclick="showHint()">50/50 Hint 💡</button>
+    <button class="btn btn-primary" id="study-next-btn" onclick="nextStudyQ()" style="display:none">Next Question →</button>
+    <button class="btn btn-secondary" onclick="showScreen('home')">Menu</button>
+  </div>
+</div>
+
+<!-- EXAM -->
+<div id="screen-exam" class="screen">
+  <div id="exam-start">
+    <h2>Mock Exam</h2>
+    <p class="subtitle">PRINCE2 Foundation exam simulation</p>
+    <div class="info-box">
+      <h4>Exam Conditions</h4>
+      • 60 random questions from all categories<br>
+      • Time: 60 minutes<br>
+      • Pass mark: 55% (33 out of 60 points)<br>
+      • No explanations during the exam<br>
+      • Results and analysis after completion
+    </div>
+    <button class="btn btn-primary" onclick="beginExam()" style="margin-top:16px">Start Exam</button>
+  </div>
+
+  <div id="exam-running" style="display:none">
+    <div class="exam-timer" id="exam-timer">60:00</div>
+    <div class="q-header">
+      <span class="q-category" id="exam-cat"></span>
+      <span class="q-number" id="exam-num"></span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="exam-progress"></div></div>
+    <div class="question-text" id="exam-question"></div>
+    <div class="options" id="exam-options"></div>
+    <div class="q-actions" style="margin-top:20px">
+      <button class="btn btn-primary" id="exam-next-btn" onclick="nextExamQ()" style="display:none">Next →</button>
+      <button class="btn btn-secondary" id="exam-finish-btn" onclick="finishExam()" style="display:none">Finish Exam</button>
+    </div>
+  </div>
+
+  <div id="exam-results" style="display:none">
+    <h2 style="text-align:center">Exam Result</h2>
+    <div class="result-circle" id="result-circle">
+      <span id="result-pct">0%</span>
+      <small id="result-verdict">–</small>
+    </div>
+    <div style="text-align:center; margin-bottom:16px">
+      <span id="result-score" style=" font-size:0.9rem"></span>
+    </div>
+    <div class="result-breakdown" id="result-breakdown"></div>
+    <div class="q-actions" style="justify-content:center">
+      <button class="btn btn-primary" onclick="reviewExam()">Review Answers</button>
+      <button class="btn btn-secondary" onclick="resetExam()">New Exam</button>
+    </div>
+  </div>
+
+  <div id="exam-review" style="display:none">
+    <h2>Answer Review</h2>
+    <div id="review-list"></div>
+    <button class="btn btn-secondary" onclick="resetExam()" style="margin-top:16px">Back</button>
+  </div>
+</div>
+
+<!-- THEORY -->
+<div id="screen-theory" class="screen">
+  <h2>PRINCE2 Theory</h2>
+  <p class="subtitle">Key concepts for the exam</p>
+
+  <div class="info-box">
+    <h4>7 PRINCE2 Principles</h4>
+    <strong >1. Continued business justification</strong><br>
+    The project must have a justifiable reason to start and continue throughout its duration. The justification is documented in the Business Case and verified at every stage boundary.<br><br>
+    <strong >2. Learn from experience</strong><br>
+    Lessons are sought, recorded, and acted upon throughout the project and after its completion. The Lessons Log is maintained at all times.<br><br>
+    <strong >3. Defined roles and responsibilities</strong><br>
+    The project has clearly defined and agreed roles with areas of responsibility that consider the interests of the business, users, and suppliers.<br><br>
+    <strong >4. Manage by stages</strong><br>
+    The project is planned, monitored, and controlled stage by stage. Detailed planning for the short term, with high-level planning for the future.<br><br>
+    <strong >5. Manage by exception</strong><br>
+    Each level of project management has authority within established tolerance limits. Exceptions are escalated to a higher level only when tolerances are forecast to be exceeded.<br><br>
+    <strong >6. Focus on products</strong><br>
+    PRINCE2 focuses on defining and delivering products – particularly on the quality of requirements. The project delivers products, it does not just carry out activities.<br><br>
+    <strong >7. Tailor to suit the project</strong><br>
+    PRINCE2 is tailored to the specifics, scale, complexity, importance, capability, and risk of the project. There is no one-size-fits-all.
+  </div>
+
+  <div class="info-box">
+    <h4>7 PRINCE2 Practices (Themes)</h4>
+    <span class="badge badge-blue">Business Case</span> Why? Justification and benefits of the project<br>
+    <span class="badge badge-blue">Organization</span> Who? Roles and responsibilities in the project<br>
+    <span class="badge badge-blue">Quality</span> What? Defining and controlling product quality<br>
+    <span class="badge badge-blue">Plans</span> How? When? How much? Planning management levels<br>
+    <span class="badge badge-blue">Risk</span> What if? Risk identification and management<br>
+    <span class="badge badge-blue">Change</span> What is the impact? Managing changes and issues<br>
+    <span class="badge badge-blue">Progress</span> Where are we? Monitoring and controlling progress
+  </div>
+
+  <div class="info-box">
+    <h4>7 PRINCE2 Processes</h4>
+    <strong >SU – Starting Up a Project</strong><br>
+    Before initiation. Appointing the executive and project manager, developing the project brief, selecting the approach.<br><br>
+    <strong >DP – Directing a Project</strong><br>
+    Project Board only. Authorizing initiation, stages, closure. Handling exceptions.<br><br>
+    <strong >IP – Initiating a Project</strong><br>
+    Creating the PID (Project Initiation Documentation). Establishing project controls.<br><br>
+    <strong >CS – Controlling a Stage</strong><br>
+    Day-to-day management by the Project Manager: assigning work packages, monitoring.<br><br>
+    <strong >MP – Managing Product Delivery</strong><br>
+    The Team Manager accepts, executes, and delivers work packages.<br><br>
+    <strong >SB – Managing a Stage Boundary</strong><br>
+    Reporting to the board, updating plans, requesting authorization for the next stage.<br><br>
+    <strong >CP – Closing a Project</strong><br>
+    Handing over products, evaluating benefits, recommending closure.
+  </div>
+
+  <div class="info-box">
+    <h4>Project Management Team Structure</h4>
+    <strong >Project Board</strong><br>
+    • <em>Executive</em> – responsible for the Business Case, has the ultimate say<br>
+    • <em>Senior User</em> – represents the users of the products<br>
+    • <em>Senior Supplier</em> – represents the suppliers of resources<br><br>
+    <strong >Project Manager</strong> – manages stages day-to-day<br>
+    <strong >Team Manager</strong> – manages the work of production teams<br>
+    <strong >Project Assurance</strong> – independent monitoring (not the PM!)<br>
+    <strong >Project Support</strong> – administrative support<br>
+    <strong >Change Authority</strong> – can be delegated by the Project Board
+  </div>
+
+  <div class="info-box">
+    <h4>Tolerances (6 dimensions)</h4>
+    <span class="badge badge-orange">Time</span>
+    <span class="badge badge-orange">Cost</span>
+    <span class="badge badge-orange">Scope</span>
+    <span class="badge badge-orange">Quality</span>
+    <span class="badge badge-orange">Risk</span>
+    <span class="badge badge-orange">Benefits</span><br><br>
+    Tolerances define permissible deviations from the plan. Exceeding a tolerance = escalation to a higher level.
+  </div>
+
+  <div class="info-box">
+    <h4>Key Management Products</h4>
+    <strong >Plans:</strong> Project Plan, Stage Plan, Exception Plan, Team Plan (optional)<br>
+    <strong >Registers:</strong> Risk Register, Quality Register, Issue Register, Lessons Log, Daily Log<br>
+    <strong >Reports:</strong> Checkpoint Report, Highlight Report, End Stage Report, End Project Report, Exception Report<br>
+    <strong >Other:</strong> Project Brief, PID, Business Case, Product Description, Work Package, Configuration Item Record
+  </div>
+
+  <div class="info-box">
+    <h4>Risk Management Procedure (5 steps)</h4>
+    1. <strong >Identify</strong> – identify risks and their context<br>
+    2. <strong >Assess</strong> – probability × impact<br>
+    3. <strong >Plan</strong> – select risk responses<br>
+    4. <strong >Implement</strong> – act according to the plan<br>
+    5. <strong >Communicate</strong> – throughout the process
+  </div>
+
+  <!-- MIND MAPS -->
+  <div class="info-box" >
+    <h4 style=" font-size:1rem; margin-bottom:12px">🗺️ PRINCE2 Methodology Mind Map</h4>
+    <p style="font-size:0.8rem; margin-bottom:12px">Visual breakdown of the 3 pillars of PRINCE2.</p>
+    <div class="mermaid" style="text-align:center;">
+      mindmap
+        root((PRINCE2))
+          Principles
+            Continued Business Justification
+            Learn from Experience
+            Defined Roles
+            Manage by Stages
+            Manage by Exception
+            Focus on Products
+            Tailor to Suit
+          Themes
+            Business Case
+            Organization
+            Quality
+            Plans
+            Risk
+            Change
+            Progress
+          Processes
+            Starting Up
+            Directing
+            Initiating
+            Controlling a Stage
+            Managing Product Delivery
+            Managing a Stage Boundary
+            Closing
+    </div>
+  </div>
+
+  <div class="info-box" >
+    <h4 style=" font-size:1rem; margin-bottom:12px">🔄 PRINCE2 Process Flow Schema</h4>
+    <p style="font-size:0.8rem; margin-bottom:12px">The lifecycle of a PRINCE2 project.</p>
+    <div class="mermaid" style="text-align:center;">
+      graph TD
+      Corporate[Corporate / Programme Management] -->|Project Mandate| SU(Starting Up a Project)
+      SU -->|Project Brief| DP(Directing a Project)
+      DP -->|Authorize Initiation| IP(Initiating a Project)
+      IP -->|PID| DP
+      DP -->|Authorize Project| CS(Controlling a Stage)
+      CS <-->|Work Packages| MP(Managing Product Delivery)
+      CS -->|Stage Boundary| SB(Managing a Stage Boundary)
+      SB -->|Update Plan| DP
+      DP -->|Authorize Next Stage| CS
+      CS -->|Final Stage| CP(Closing a Project)
+      CP -->|End Project| DP
+      
+      classDef proc fill:#1e2a4a,stroke:#7eb3ff,stroke-width:2px,
+      classDef corp fill:#3d2800,stroke:#f6ad55,stroke-width:2px,
+      class SU,DP,IP,CS,MP,SB,CP proc;
+      class Corporate corp;
+    </div>
+  </div>
+
+  <!-- ===== SZYBKA NAUKA ===== -->
+  <div style="margin: 28px 0 0 0">
+    <h2 style=" font-size:1.25rem; margin-bottom:4px">⚡ Fast Track — Quick Tips</h2>
+    <p class="subtitle">Mnemonics · Exam Traps · Confused Terms · 2-Week Plan</p>
+
+    <!-- MNEMONIKI -->
+    <div class="info-box" style=" margin-top:16px">
+      <h4 style=" font-size:1rem; margin-bottom:12px">🧠 Mnemonics — How to remember 7+7+7</h4>
+
+      <div style="margin-bottom:16px">
+        <strong >7 PRINCIPLES:</strong><br>
+        <div style=" border-radius:8px; padding:10px 14px; margin:8px 0; text-align:center">
+          <span style=" font-size:1.05rem; font-weight:700; letter-spacing:0.3px">"Just Learn Roles, Stages Except Products Tailor"</span>
+        </div>
+        <div style="font-size:0.82rem;  line-height:2">
+          <span style=" font-weight:700">J</span>ust → <strong>C</strong>ontinued business justification &nbsp;·&nbsp;
+          <span style=" font-weight:700">L</span>earn → <strong>L</strong>earn from experience<br>
+          <span style=" font-weight:700">R</span>oles → <strong>D</strong>efined roles and responsibilities &nbsp;·&nbsp;
+          <span style=" font-weight:700">S</span>tages → <strong>M</strong>anage by stages<br>
+          <span style=" font-weight:700">E</span>xcept → <strong>M</strong>anage by exception &nbsp;·&nbsp;
+          <span style=" font-weight:700">P</span>roducts → <strong>F</strong>ocus on products<br>
+          <span style=" font-weight:700">T</span>ailor → <strong>T</strong>ailor to suit the project
+        </div>
+      </div>
+
+      <div style="margin-bottom:16px">
+        <strong >7 THEMES / PRACTICES — each answers one question:</strong>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px; font-size:0.83rem">
+          <div style=" border-radius:6px; padding:8px 11px"><span style=" font-weight:600">Business Case</span> → <em>Why?</em></div>
+          <div style=" border-radius:6px; padding:8px 11px"><span style=" font-weight:600">Organization</span> → <em>Who?</em></div>
+          <div style=" border-radius:6px; padding:8px 11px"><span style=" font-weight:600">Quality</span> → <em>What? (criteria)</em></div>
+          <div style=" border-radius:6px; padding:8px 11px"><span style=" font-weight:600">Plans</span> → <em>How? When? How much?</em></div>
+          <div style=" border-radius:6px; padding:8px 11px"><span style=" font-weight:600">Risk</span> → <em>What if?</em></div>
+          <div style=" border-radius:6px; padding:8px 11px"><span style=" font-weight:600">Change</span> → <em>What's the impact?</em></div>
+          <div style=" border-radius:6px; padding:8px 11px; grid-column:1/-1"><span style=" font-weight:600">Progress</span> → <em>Where are we?</em></div>
+        </div>
+        <div style="margin-top:8px; font-size:0.81rem; ">
+          English abbreviation: <span style=" font-weight:700">BOQPRCP</span> → <em>"<strong>B</strong>ig <strong>O</strong>range <strong>Q</strong>uail <strong>P</strong>ecks <strong>R</strong>ipe <strong>C</strong>herries <strong>P</strong>atiently"</em>
+        </div>
+      </div>
+
+      <div>
+        <strong >7 PROCESSES — story of a project from start to finish:</strong>
+        <div style=" border-radius:8px; padding:10px 14px; margin:8px 0; font-size:0.83rem; line-height:2.2">
+          <span style=" border-radius:4px; padding:3px 8px;  font-weight:700">SU</span>
+          <span > → </span>
+          <span style=" border-radius:4px; padding:3px 8px;  font-weight:700">IP</span>
+          <span > → </span>
+          <span style=" border-radius:4px; padding:3px 8px;  font-weight:700">DP ⟲</span>
+          <span > → </span>
+          <span style=" border-radius:4px; padding:3px 8px;  font-weight:700">CS</span>
+          <span > ↕ </span>
+          <span style=" border-radius:4px; padding:3px 8px;  font-weight:700">MP</span>
+          <span > → </span>
+          <span style=" border-radius:4px; padding:3px 8px;  font-weight:700">SB</span>
+          <span > → </span>
+          <span style=" border-radius:4px; padding:3px 8px;  font-weight:700">CP</span>
+        </div>
+        <div style="font-size:0.81rem;  line-height:1.7">
+          <span >DP ⟲</span> = Project Board operates <em>throughout the project</em> (overlaps with other processes).<br>
+          <span >CS ↕ MP</span> = PM (CS) and Team Manager (MP) work in parallel during each stage.<br>
+          Mnemonic: <em>"<strong>S</strong>ome <strong>I</strong>ndividuals <strong>D</strong>o <strong>C</strong>reate <strong>M</strong>any <strong>S</strong>plendid <strong>C</strong>akes"</em>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOP 10 PUŁAPEK -->
+    <div class="info-box" style=" margin-top:16px">
+      <h4 style=" font-size:1rem; margin-bottom:12px">⚠️ Top 10 Exam Traps</h4>
+      <div style="font-size:0.87rem; line-height:1.75">
+
+        <div style="margin-bottom:9px; padding:9px 13px;  border-radius:8px">
+          <strong >1. The pass mark is 55% (33/60) — not 60%!</strong><br>
+          Many older materials state 60% — that's either an error or relates to Practitioner. Foundation = 55%.
+        </div>
+
+        <div style="margin-bottom:9px; padding:9px 13px;  border-radius:8px">
+          <strong >2. Project Assurance CANNOT be delegated to the PM.</strong><br>
+          Project Assurance is the responsibility of the Project Board. Delegating to the PM = conflict of interest. It can be delegated to others, but NEVER to the Project Manager.
+        </div>
+
+        <div style="margin-bottom:9px; padding:9px 13px;  border-radius:8px">
+          <strong >3. "Accountable" ≠ "Responsible" — read the last sentence of the question!</strong><br>
+          "Who is accountable?" → Executive / Board. "Who is responsible?" → PM or Team Manager. Always focus on the last sentence of the question.
+        </div>
+
+        <div style="margin-bottom:9px; padding:9px 13px;  border-radius:8px">
+          <strong >4. The Executive owns the Business Case, not the PM.</strong><br>
+          The PM <em>develops</em> the Business Case on behalf of the Executive, but the Executive is its <em>owner</em> and is ultimately accountable for it.
+        </div>
+
+        <div style="margin-bottom:9px; padding:9px 13px;  border-radius:8px">
+          <strong >5. SU does NOT create the PID — IP does!</strong><br>
+          SU outputs: Project Brief + outline Business Case + appointing the PM. The full PID (Project Initiation Documentation) is only created during IP (Initiating a Project).
+        </div>
+
+        <div style="margin-bottom:9px; padding:9px 13px;  border-radius:8px">
+          <strong >6. Exception Report ≠ Exception Plan — two separate steps.</strong><br>
+          Exception Report: PM informs the Board of a problem. Exception Plan: PM creates a new plan only upon the Board's request. Don't confuse the order.
+        </div>
+
+        <div style="margin-bottom:9px; padding:9px 13px;  border-radius:8px">
+          <strong >7. A project without justification = close the project.</strong><br>
+          PRINCE2 always protects the Business Case. If a project is no longer viable, the correct answer is a recommendation to close it — not workarounds.
+        </div>
+
+        <div style="margin-bottom:9px; padding:9px 13px;  border-radius:8px">
+          <strong >8. Checkpoint Report goes to the PM, not the Project Board.</strong><br>
+          Checkpoint Report: Team Manager → PM (work package progress).<br>
+          Highlight Report: PM → Project Board (stage progress).
+        </div>
+
+        <div style="margin-bottom:9px; padding:9px 13px;  border-radius:8px">
+          <strong >9. Principles are mandatory and non-negotiable.</strong><br>
+          Tailoring applies to the processes, themes, and management products — it never exempts you from the 7 principles.
+        </div>
+
+        <div style="padding:9px 13px;  border-radius:8px">
+          <strong >10. Choose the most "PRINCE2" answer, not just "common sense".</strong><br>
+          The exam tests PRINCE2 methodology, not general managerial common sense. An answer might be logical "in real life" but wrong in PRINCE2.
+        </div>
+      </div>
+    </div>
+
+    <!-- MYLONE POJĘCIA -->
+    <div class="info-box" style=" margin-top:16px">
+      <h4 style=" font-size:1rem; margin-bottom:12px">🔀 Frequently Confused Terms</h4>
+      <div style="font-size:0.87rem; line-height:1.7">
+
+        <div style="margin-bottom:13px; border-bottom:1px solid #2d3748; padding-bottom:13px">
+          <strong >Output → Outcome → Benefit</strong><br>
+          <span >Output</span> = tangible product delivered by the project (e.g., a new IT system)<br>
+          <span >Outcome</span> = change resulting from the use of the product (e.g., faster customer service)<br>
+          <span >Benefit</span> = measurable business value (e.g., saving $500k annually)<br>
+          <em >💡 Trick: Cause and effect order: Output → Outcome → Benefit.</em>
+        </div>
+
+        <div style="margin-bottom:13px; border-bottom:1px solid #2d3748; padding-bottom:13px">
+          <strong >Project Brief vs Business Case vs PID</strong><br>
+          <span >Project Brief</span> = short justification created in SU, input for IP<br>
+          <span >Business Case</span> = living justification document updated throughout the project<br>
+          <span >PID</span> = complete initiation documentation, created in IP, approved by the Board<br>
+          <em >💡 Trick: SU creates the Brief → IP creates the PID (which contains the full BC).</em>
+        </div>
+
+        <div style="margin-bottom:13px; border-bottom:1px solid #2d3748; padding-bottom:13px">
+          <strong >Project Assurance vs Project Support</strong><br>
+          <span >Project Assurance</span> = independent monitoring for the Project Board (cannot be PM!)<br>
+          <span >Project Support</span> = administrative support for the PM (can be combined with PM)<br>
+          <em >💡 Trick: Assurance = independent control; Support = administrative help.</em>
+        </div>
+
+        <div style="margin-bottom:13px; border-bottom:1px solid #2d3748; padding-bottom:13px">
+          <strong >Risk Owner vs Risk Actionee</strong><br>
+          <span >Risk Owner</span> = responsible for managing, monitoring, and controlling the risk<br>
+          <span >Risk Actionee</span> = carries out specific actions assigned by the Risk Owner<br>
+          <em >💡 Trick: Owner = risk manager; Actionee = executor.</em>
+        </div>
+
+        <div style="margin-bottom:13px; border-bottom:1px solid #2d3748; padding-bottom:13px">
+          <strong >Lessons Log vs Lessons Report</strong><br>
+          <span >Lessons Log</span> = continuous journal of lessons maintained throughout the project<br>
+          <span >Lessons Report</span> = formal summary created at the end of a stage or project<br>
+          <em >💡 Trick: Log = open folder (continuous); Report = closed document (one-off).</em>
+        </div>
+
+        <div style="margin-bottom:13px; border-bottom:1px solid #2d3748; padding-bottom:13px">
+          <strong >Exception Report vs Exception Plan</strong><br>
+          <span >Exception Report</span> = PM informs the Board of forecasted tolerance breach<br>
+          <span >Exception Plan</span> = PM creates a new plan upon Board request, replaces Stage Plan<br>
+          <em >💡 Trick: First Report (diagnosis) → Board requests a plan → Plan (treatment).</em>
+        </div>
+
+        <div>
+          <strong >Management Stage vs Technical Stage</strong><br>
+          <span >Management Stage</span> = project segment with a Board checkpoint, plans, and tolerances<br>
+          <span >Technical Stage</span> = grouping work by specialty (e.g., design, testing)<br>
+          <em >💡 Trick: PRINCE2 uses management stages for control (the ones with the Board at the end).</em>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLAN 2-TYGODNIOWY -->
+    <div class="info-box" style=" margin-top:16px; margin-bottom:8px">
+      <h4 style=" font-size:1rem; margin-bottom:12px">📅 2-Week Preparation Strategy</h4>
+      <div style="font-size:0.87rem; line-height:1.75">
+
+        <div style="margin-bottom:14px">
+          <strong >WEEK 1 — Building Knowledge (30–40 mins daily)</strong>
+          <div style="margin-top:8px; padding:10px 14px;  border-radius:8px; line-height:2.1">
+            <span style=" font-weight:600">Day 1–2:</span> 7 Principles — read, rewrite in own words, learn mnemonics<br>
+            <span style=" font-weight:600">Day 3:</span> 7 Themes — the questions each theme answers, key documents<br>
+            <span style=" font-weight:600">Day 4–5:</span> 7 Processes — who does what, inputs and outputs, sequence<br>
+            <span style=" font-weight:600">Day 6:</span> Roles and responsibilities — Board (Executive/SU/SS), PM, Team Manager, Assurance vs Support<br>
+            <span style=" font-weight:600">Day 7:</span> Review + 30 questions (study mode, all categories)
+          </div>
+        </div>
+
+        <div style="margin-bottom:14px">
+          <strong >WEEK 2 — Practice and Consolidation (45–60 mins daily)</strong>
+          <div style="margin-top:8px; padding:10px 14px;  border-radius:8px; line-height:2.1">
+            <span style=" font-weight:600">Day 8–9:</span> Mock Exam (60 Qs, 60 mins) → review mistakes, analyze weak areas<br>
+            <span style=" font-weight:600">Day 10:</span> Return to theory for weak areas + practice specific categories<br>
+            <span style=" font-weight:600">Day 11:</span> Review confused terms + memorize top 10 traps (above)<br>
+            <span style=" font-weight:600">Day 12:</span> Second Mock Exam → goal: above 70% to have a buffer<br>
+            <span style=" font-weight:600">Day 13:</span> Light review — mnemonics, key definitions, 7+7+7 lists<br>
+            <span style=" font-weight:600">Day 14:</span> 🎯 <strong>EXAM</strong> — remember: <strong>60 questions · 60 minutes · 55% pass mark</strong>
+          </div>
+        </div>
+
+        <div style="padding:12px 15px;  border-radius:8px; border:1px solid #276749">
+          <strong >💡 Golden Rules During the Exam:</strong><br>
+          <span >
+            • Read the <strong >last sentence</strong> of each question first — that's the core<br>
+            • When you see <strong >"accountable"</strong> → look for Project Board / Executive<br>
+            • When a project loses justification → the answer is always <strong >"premature closure"</strong><br>
+            • When in doubt, pick the <strong >"most PRINCE2"</strong> answer, not "most logical"<br>
+            • No negative marks — <strong >always pick an answer!</strong> Never leave blanks.<br>
+            • Average 1 min per question — if stuck, mark and return later
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- STATS -->
+<div id="screen-stats" class="screen">
+  <h2>Your Statistics</h2>
+  <p class="subtitle">Learning Progress</p>
+  <div id="stats-content"></div>
+  <button class="btn btn-danger" onclick="resetStats()" style="margin-top:20px">Reset Statistics</button>
+</div>
+
+<script>
+// ============================
+// BAZA PYTAŃ
+// ============================
+const QUESTIONS = [
+  // ---- OFFICIAL STYLE QUESTIONS (EN) — Based on PRINCE2 7th Edition & PRINCE2 2017 ----
+  { id:1001, cat:"Principles", q:"Which of the following is a PRINCE2 principle?", opts:["Focus on customers", "Manage by exception", "Empower teams to self-organise", "Deliver incrementally"], ans:1, exp:"<strong>Manage by Exception</strong> is one of the 7 PRINCE2 principles. Tolerances are defined for each objective; the project manager only escalates to the Project Board when tolerances are forecast to be exceeded." },
+  { id:1002, cat:"Principles", q:"Which PRINCE2 principle ensures that a project remains viable and worthwhile throughout its life?", opts:["Focus on Products", "Manage by Stages", "Ensure Continued Business Justification", "Learn from Experience"], ans:2, exp:"The <strong>Ensure Continued Business Justification</strong> principle requires that there is a justifiable reason to start the project and that this justification remains valid throughout the project's life." },
+  { id:1003, cat:"Principles", q:"Which PRINCE2 principle requires that teams seek, record and act on lessons from previous and current projects?", opts:["Manage by Exception", "Focus on Products", "Tailor to Suit the Project", "Learn from Experience"], ans:3, exp:"The <strong>Learn from Experience</strong> principle states that PRINCE2 project teams learn from previous experience: lessons are sought, recorded and acted upon throughout the life of the project." },
+  { id:1004, cat:"Principles", q:"Which PRINCE2 principle uses tolerances to establish limits of delegated authority?", opts:["Manage by Stages", "Manage by Exception", "Focus on Products", "Ensure Continued Business Justification"], ans:1, exp:"The <strong>Manage by Exception</strong> principle uses tolerances to establish limits of delegated authority. If tolerances are forecast to be exceeded, the exception is escalated to the next level of management." },
+  { id:1005, cat:"Principles", q:"Which PRINCE2 principle requires that a project is planned, monitored and controlled on a stage-by-stage basis?", opts:["Manage by Exception", "Focus on Products", "Manage by Stages", "Define Roles, Responsibilities and Relationships"], ans:2, exp:"<strong>Manage by Stages</strong> requires that a project is planned, monitored and controlled on a stage-by-stage basis. The Project Board authorizes each stage, ensuring continued review and direction." },
+  { id:1006, cat:"Principles", q:"Which PRINCE2 principle requires a clearly defined project management team structure with named roles?", opts:["Focus on Products", "Manage by Stages", "Ensure Continued Business Justification", "Define Roles, Responsibilities and Relationships"], ans:3, exp:"The <strong>Define Roles, Responsibilities and Relationships</strong> principle requires a clearly defined and agreed project management team structure with named roles and documented responsibilities." },
+  { id:1007, cat:"Principles", q:"Which of the following is NOT a PRINCE2 principle?", opts:["Ensure Continued Business Justification", "Manage by Exception", "Focus on Stakeholder Satisfaction", "Learn from Experience"], ans:2, exp:"<strong>Focus on Stakeholder Satisfaction</strong> is not a PRINCE2 principle. The 7 principles are: Ensure Continued Business Justification, Learn from Experience, Define Roles and Responsibilities, Manage by Stages, Manage by Exception, Focus on Products, Tailor to Suit the Project." },
+  { id:1008, cat:"Business Case", q:"Who owns the Business Case in a PRINCE2 project?", opts:["The Project Manager", "The Senior User", "The Executive", "The Senior Supplier"], ans:2, exp:"The <strong>Executive</strong> owns the Business Case. The Executive is ultimately responsible for the project and accountable for ensuring that the project represents value for money." },
+  { id:1009, cat:"Business Case", q:"In which PRINCE2 process is the outline Business Case first created?", opts:["Directing a Project", "Initiating a Project", "Starting Up a Project", "Managing a Stage Boundary"], ans:2, exp:"The outline Business Case is first created during <strong>Starting Up a Project</strong>. It is then developed into a full Business Case during Initiating a Project." },
+  { id:1010, cat:"Business Case", q:"What is the purpose of the Business Case practice in PRINCE2?", opts:["To ensure the project has sufficient resources", "To establish mechanisms to judge whether the project is (and remains) desirable, viable and achievable", "To define the project scope and deliverables", "To manage the project risks and issues"], ans:1, exp:"The purpose of the Business Case practice is to establish mechanisms to judge whether the project is (and remains) <strong>desirable, viable and achievable</strong> as a means to support decision making in its continued investment." },
+  { id:1011, cat:"Business Case", q:"Which role is responsible for ensuring that benefits are realized after the project closes?", opts:["Project Manager", "Executive", "Senior User", "Senior Supplier"], ans:2, exp:"The <strong>Senior User</strong> is responsible for specifying the needs of those who will use the project's products and for realizing the expected benefits after project closure." },
+  { id:1012, cat:"Business Case", q:"Which document defines how and when measurement of the achievement of the project benefits can be made?", opts:["Business Case", "Benefits Management Approach", "Project Plan", "End Project Report"], ans:1, exp:"The <strong>Benefits Management Approach</strong> defines how and when measurement of the achievement of the project benefits can be made. It is created during Initiating a Project." },
+  { id:1013, cat:"Organization", q:"Which three roles make up the Project Board in PRINCE2?", opts:["Project Manager, Team Manager, Project Support", "Executive, Senior User, Senior Supplier", "Project Manager, Senior User, Senior Supplier", "Executive, Project Manager, Team Manager"], ans:1, exp:"The Project Board consists of three roles: <strong>Executive</strong> (business), <strong>Senior User</strong> (user), and <strong>Senior Supplier</strong> (supplier)." },
+  { id:1014, cat:"Organization", q:"Who is accountable for the overall success of a PRINCE2 project?", opts:["Project Manager", "Executive", "Senior User", "Programme Manager"], ans:1, exp:"The <strong>Executive</strong> is ultimately accountable for the project. As the key decision maker, the Executive is responsible for the project achieving its objectives and delivering value for money." },
+  { id:1015, cat:"Organization", q:"What is the purpose of Project Assurance in PRINCE2?", opts:["To provide administrative support to the Project Manager", "To independently check that the project is being conducted correctly on behalf of the Project Board", "To manage the delivery of work packages", "To provide funding for the project"], ans:1, exp:"<strong>Project Assurance</strong> is the Project Board's responsibility to ensure the project is being conducted correctly. It cannot be delegated to the Project Manager (conflict of interest)." },
+  { id:1016, cat:"Organization", q:"Which role in PRINCE2 is responsible for day-to-day management of the project?", opts:["Executive", "Project Board", "Project Manager", "Team Manager"], ans:2, exp:"The <strong>Project Manager</strong> is responsible for the day-to-day management of the project within the constraints laid down by the Project Board." },
+  { id:1017, cat:"Organization", q:"What is the primary responsibility of the Senior Supplier on the Project Board?", opts:["Owning the Business Case", "Representing the interests of those designing, developing and implementing the project products", "Managing the project on a day-to-day basis", "Realizing the benefits from the project"], ans:1, exp:"The <strong>Senior Supplier</strong> represents the interests of those designing, developing, facilitating and implementing the project products. They are responsible for the technical integrity of the project." },
+  { id:1018, cat:"Quality", q:"What is the purpose of the Quality practice in PRINCE2?", opts:["To plan the project budget and schedule", "To define and implement the means by which the project will create and verify products fit for purpose", "To manage the project risks", "To control all changes to the project products"], ans:1, exp:"The purpose of the Quality practice is to define and implement the means by which the project will <strong>create and verify products that are fit for purpose</strong>." },
+  { id:1019, cat:"Quality", q:"Which document describes the customer quality expectations and acceptance criteria for the project final product?", opts:["Quality Register", "Project Product Description", "Work Package", "Highlight Report"], ans:1, exp:"The <strong>Project Product Description</strong> defines the customer quality expectations, acceptance criteria, and the acceptance methods for the overall project product." },
+  { id:1020, cat:"Quality", q:"What is the purpose of the Quality Register in PRINCE2?", opts:["To record all issues raised during the project", "To summarize all the quality management activities planned and carried out during the project", "To describe the products to be delivered", "To record all risks identified for the project"], ans:1, exp:"The <strong>Quality Register</strong> summarizes all the quality management activities planned and carried out during the project. It acts as a diary of quality events and provides information for stage and project reports." },
+  { id:1021, cat:"Quality", q:"In PRINCE2, what does a Product Description define?", opts:["The project schedule and resource requirements", "The project budget and cost baseline", "The purpose, composition, format, quality criteria and quality methods for a product", "The communication approach for the project"], ans:2, exp:"A <strong>Product Description</strong> defines the purpose, composition, derivation, format, quality criteria and quality methods for a specific product. It is a key planning and quality control document." },
+  { id:1022, cat:"Plans", q:"What are the three levels of plans used in PRINCE2?", opts:["Corporate Plan, Project Plan, Stage Plan", "Project Plan, Stage Plan, Team Plan", "Business Plan, Project Plan, Stage Plan", "Programme Plan, Project Plan, Exception Plan"], ans:1, exp:"PRINCE2 uses three levels of plans: the <strong>Project Plan</strong> (high level), <strong>Stage Plan</strong> (detailed for one stage), and <strong>Team Plan</strong> (optional, for Team Managers)." },
+  { id:1023, cat:"Plans", q:"What is the purpose of the Plans practice in PRINCE2?", opts:["To identify and control risks to the project", "To facilitate communication and control by defining the means by which products will be delivered", "To define and implement quality management processes", "To manage all changes to the project products"], ans:1, exp:"The purpose of the Plans practice is to <strong>facilitate communication and control</strong> by defining the means by which products will be delivered." },
+  { id:1024, cat:"Plans", q:"Which document authorizes a Team Manager to produce one or more products?", opts:["Highlight Report", "Checkpoint Report", "Work Package", "Stage Plan"], ans:2, exp:"A <strong>Work Package</strong> is the set of information relevant to the creation of one or more products. It authorizes the Team Manager to manage the production of the required product(s)." },
+  { id:1025, cat:"Plans", q:"Which type of plan is created when a stage or project is forecast to exceed its tolerances?", opts:["Stage Plan", "Team Plan", "Exception Plan", "Recovery Plan"], ans:2, exp:"An <strong>Exception Plan</strong> is created when a stage or project is forecast to exceed its agreed tolerances. It replaces the current Stage Plan and requires authorization from the Project Board." },
+  { id:1026, cat:"Risk", q:"In PRINCE2, what is a risk?", opts:["An issue that has already occurred and is affecting the project", "An uncertain event or set of events that, should it occur, will have an effect on achievement of objectives", "A change request submitted to the Project Board", "A defect discovered during quality review"], ans:1, exp:"In PRINCE2, a <strong>risk</strong> is an uncertain event or set of events that, should it occur, will have an effect on the achievement of objectives. Risks can be threats (negative) or opportunities (positive)." },
+  { id:1027, cat:"Risk", q:"Which document records all risks identified for the project?", opts:["Issue Register", "Daily Log", "Risk Register", "Quality Register"], ans:2, exp:"The <strong>Risk Register</strong> provides a record of all risks identified for the project, along with their status and history. It is created during Initiating a Project." },
+  { id:1028, cat:"Risk", q:"What are the two categories of risk in PRINCE2?", opts:["Internal risks and external risks", "Known risks and unknown risks", "Threats and opportunities", "High risks and low risks"], ans:2, exp:"In PRINCE2, risks are categorized as <strong>threats</strong> (negative uncertainty) or <strong>opportunities</strong> (positive uncertainty). Both must be managed effectively." },
+  { id:1029, cat:"Risk", q:"What is a Risk Owner in PRINCE2?", opts:["The person who initially identified the risk", "The person responsible for managing a specific risk", "Always the Project Manager", "Always the Executive"], ans:1, exp:"A <strong>Risk Owner</strong> is the person responsible for managing, monitoring and controlling all aspects of a particular risk, including the implementation of the selected responses." },
+  { id:1030, cat:"Risk", q:"Which risk response type would be used when the project cannot influence the probability or impact of a threat?", opts:["Reduce", "Avoid", "Transfer", "Accept"], ans:3, exp:"<strong>Accept</strong> is used when the project team decides to acknowledge the risk without taking proactive action. Appropriate when the cost of other responses outweighs the benefit." },
+  { id:1031, cat:"Change", q:"What is the purpose of the Change practice in PRINCE2?", opts:["To plan the project stage by stage", "To identify, assess and control any potential and approved changes to baselined products", "To monitor and report project progress to the Project Board", "To define clear roles and responsibilities"], ans:1, exp:"The purpose of the Change practice is to <strong>identify, assess and control</strong> any potential and approved changes to baselined products. All proposed changes must be assessed before being approved." },
+  { id:1032, cat:"Change", q:"Which type of issue in PRINCE2 is defined as something that should be provided by the project but which is not currently being provided?", opts:["Request for Change", "Problem/Concern", "Off-specification", "Concession"], ans:2, exp:"An <strong>off-specification</strong> is something that should be provided by the project but which is currently not being provided, or not expected to be provided (a missing product or one not meeting its specification)." },
+  { id:1033, cat:"Change", q:"Which document is used to record all issues raised on the project?", opts:["Risk Register", "Issue Register", "Daily Log", "Lessons Log"], ans:1, exp:"The <strong>Issue Register</strong> captures and maintains information on all issues that are being formally managed — requests for change, off-specifications and problems/concerns." },
+  { id:1034, cat:"Change", q:"What is a Request for Change in PRINCE2?", opts:["A request to extend the project timeline", "A proposal for a change to a baseline product", "A formal request to close the project early", "A request for additional resources"], ans:1, exp:"A <strong>Request for Change</strong> is a proposal for a change to a baseline product. It must be formally captured in the Issue Register and assessed for its impact on scope, time, cost, quality, risk and benefits." },
+  { id:1035, cat:"Progress", q:"Which document does the Project Manager use to report progress to the Project Board during a management stage?", opts:["Checkpoint Report", "Highlight Report", "End Stage Report", "Exception Report"], ans:1, exp:"The <strong>Highlight Report</strong> is used by the Project Manager to provide the Project Board with a summary of the stage status at regular intervals defined in the Communication Management Approach." },
+  { id:1036, cat:"Progress", q:"Which document does a Team Manager use to report progress to the Project Manager?", opts:["Highlight Report", "Exception Report", "Checkpoint Report", "End Stage Report"], ans:2, exp:"The <strong>Checkpoint Report</strong> is used by the Team Manager to report to the Project Manager at a frequency agreed in the Work Package." },
+  { id:1037, cat:"Progress", q:"When should an Exception Report be produced?", opts:["At the end of each management stage", "At the start of each management stage", "When a stage or project is forecast to exceed its agreed tolerances", "After every Project Board meeting"], ans:2, exp:"An <strong>Exception Report</strong> is produced when a stage or project is <strong>forecast to exceed its agreed tolerances</strong>. It describes the situation and provides options for the Project Board." },
+  { id:1038, cat:"Progress", q:"What are the six aspects of project performance that tolerances can be set for in PRINCE2 2017?", opts:["Time, Cost, Quality, Scope, Benefits, Risk", "Time, Cost, Resources, Scope, Benefits, Risk", "Time, Cost, Quality, Scope, Risk, Stakeholders", "Time, Cost, Quality, Resources, Benefits, Sustainability"], ans:0, exp:"In PRINCE2 2017, the six aspects are: <strong>Time, Cost, Quality, Scope, Benefits and Risk</strong>. PRINCE2 7th Edition added Sustainability as a seventh aspect." },
+  { id:1039, cat:"Processes", q:"What is the purpose of the Starting Up a Project process?", opts:["To establish detailed management strategies for the project", "To ensure there is sufficient justification to proceed with initiating the project", "To plan the delivery of all the project products", "To formally authorize the project and each stage"], ans:1, exp:"The purpose of <strong>Starting Up a Project</strong> is to ensure that the prerequisites for initiating the project are in place by answering: is this a viable and worthwhile project to initiate?" },
+  { id:1040, cat:"Processes", q:"Which document is the primary output of the Starting Up a Project process?", opts:["Project Initiation Documentation", "Project Brief", "Benefits Management Approach", "Communication Management Approach"], ans:1, exp:"The <strong>Project Brief</strong> is the primary output of Starting Up a Project. It provides a full and firm foundation for the project and is used to seek authorization to initiate the project." },
+  { id:1041, cat:"Processes", q:"What triggers the Starting Up a Project process?", opts:["The completion of Initiating a Project", "A project mandate from corporate or programme management", "The appointment of the Project Board", "An approved Business Case"], ans:1, exp:"<strong>Starting Up a Project</strong> is triggered by a <strong>project mandate</strong> from corporate or programme management — the initial directive to undertake the project." },
+  { id:1042, cat:"Processes", q:"Which PRINCE2 process is performed by the Project Board throughout the life of the project?", opts:["Starting Up a Project", "Initiating a Project", "Directing a Project", "Controlling a Stage"], ans:2, exp:"<strong>Directing a Project</strong> runs from the start to the end of the project and is performed by the Project Board. It covers authorization, oversight and direction of the project." },
+  { id:1043, cat:"Processes", q:"Which is an activity within the Directing a Project process?", opts:["Prepare a Work Package", "Report highlights to the Project Board", "Authorize the project", "Create the Risk Register"], ans:2, exp:"<strong>Authorizing the project</strong> (and each subsequent stage) is an activity within the Directing a Project process. The Project Board makes the go/no-go decisions." },
+  { id:1044, cat:"Processes", q:"What is the primary output of the Initiating a Project process?", opts:["Project Brief", "Project Initiation Documentation (PID)", "Benefits Management Approach only", "Stage Plan for the first delivery stage"], ans:1, exp:"The <strong>Project Initiation Documentation (PID)</strong> is the primary output of Initiating a Project. It contains the Business Case, management strategies, project plan and controls." },
+  { id:1045, cat:"Processes", q:"Which management approaches are defined during Initiating a Project?", opts:["Risk, Quality, Communication and Change management approaches", "Budget and resource plans only", "Team structure and reporting lines only", "Risk Management Approach and Project Plan only"], ans:0, exp:"During Initiating a Project, the project establishes: <strong>Risk Management Approach, Quality Management Approach, Communication Management Approach, and Change Control Approach</strong>." },
+  { id:1046, cat:"Processes", q:"What is the purpose of the Controlling a Stage process?", opts:["To manage the delivery of work packages by Team Managers", "To assign and monitor work, handle issues, report to the Project Board, and take corrective actions", "To authorize the next stage of the project", "To plan the delivery of the project products"], ans:1, exp:"<strong>Controlling a Stage</strong> is where the Project Manager assigns and monitors work, handles issues and risks, reports progress to the Project Board, and takes corrective actions within agreed tolerances." },
+  { id:1047, cat:"Processes", q:"Which process is responsible for authorizing Work Packages?", opts:["Directing a Project", "Controlling a Stage", "Managing Product Delivery", "Initiating a Project"], ans:1, exp:"The Project Manager authorizes Work Packages as part of the <strong>Controlling a Stage</strong> process. The Work Package is the formal agreement between the Project Manager and Team Manager." },
+  { id:1048, cat:"Processes", q:"What is the purpose of the Managing Product Delivery process?", opts:["To report project progress to the Project Board", "To manage and control the work between the Project Manager and Team Managers by agreeing, executing and delivering work packages", "To authorize the project and each stage", "To plan the next stage of the project"], ans:1, exp:"<strong>Managing Product Delivery</strong> controls the link between the Project Manager and Team Managers. Its purpose is to ensure that products are authorized, agreed, executed and delivered." },
+  { id:1049, cat:"Processes", q:"Which role primarily performs the Managing Product Delivery process?", opts:["Project Manager", "Executive", "Team Manager", "Senior User"], ans:2, exp:"The <strong>Managing Product Delivery</strong> process is primarily performed by the <strong>Team Manager</strong>. The Team Manager accepts, executes and delivers Work Packages." },
+  { id:1050, cat:"Processes", q:"What is the purpose of the Managing a Stage Boundary process?", opts:["To manage the delivery of work packages within a stage", "To enable the Project Board to review the current stage and decide whether to authorize the next", "To formally close the project and hand over products", "To authorize work packages to Team Managers"], ans:1, exp:"<strong>Managing a Stage Boundary</strong> provides the Project Board with sufficient information to review the current stage success, approve the next Stage Plan, and confirm continued business justification." },
+  { id:1051, cat:"Processes", q:"When is an Exception Plan produced instead of a regular Stage Plan?", opts:["At every stage boundary", "When the Project Board requests additional information", "When a stage or project is forecast to exceed its agreed tolerances", "When a new Team Manager joins the project"], ans:2, exp:"An <strong>Exception Plan</strong> is produced when a stage or project is <strong>forecast to exceed its tolerances</strong>. It replaces the current plan and requires Project Board approval." },
+  { id:1052, cat:"Processes", q:"What is the purpose of the Closing a Project process?", opts:["To authorize the last stage of the project", "To provide a fixed point at which acceptance of the project product is confirmed and the project is formally concluded", "To manage issues raised at the end of the project", "To create the final stage plan"], ans:1, exp:"<strong>Closing a Project</strong> provides a fixed point at which acceptance of the project product is confirmed, and recognizes that objectives set out in the original PID have been achieved (or variances approved)." },
+  { id:1053, cat:"Processes", q:"Which document is produced during the Closing a Project process to summarize the project performance?", opts:["Project Initiation Documentation", "End Stage Report", "End Project Report", "Exception Report"], ans:2, exp:"The <strong>End Project Report</strong> is produced during Closing a Project. It summarizes the project performance against the original targets and provides a record for future projects." },
+  { id:1054, cat:"General", q:"What is the Project Initiation Documentation (PID)?", opts:["The initial project mandate from corporate management", "The collection of documents that defines the project, forms the basis for its management and assessment of overall success", "The document that authorizes the creation of a stage plan", "The document used to close the project"], ans:1, exp:"The <strong>PID</strong> is the collection of documents that defines the project, forms the basis for its management and assessment of overall success. It contains the Business Case, management approaches, and the Project Plan." },
+  { id:1055, cat:"General", q:"What is the Daily Log used for in PRINCE2?", opts:["Recording all issues formally raised on the project", "The Project Manager informal repository for capturing actions, informal issues and reminders", "Recording all quality activities performed", "Reporting daily progress to the Project Board"], ans:1, exp:"The <strong>Daily Log</strong> is the Project Manager informal record of actions, informal issues, events and reminders. It is a personal log — not a formal project document." },
+  { id:1056, cat:"General", q:"How many PRINCE2 principles are there?", opts:["Five", "Six", "Seven", "Eight"], ans:2, exp:"There are <strong>7 PRINCE2 principles</strong>: Ensure Continued Business Justification, Learn from Experience, Define Roles and Responsibilities, Manage by Stages, Manage by Exception, Focus on Products, and Tailor to Suit the Project." },
+  { id:1057, cat:"General", q:"Which of the following best describes a project in PRINCE2?", opts:["A permanent organization set up to deliver ongoing business services", "A temporary organization created to deliver one or more business products according to an agreed Business Case", "A group of related projects managed in a coordinated way", "A set of routine business activities undertaken regularly"], ans:1, exp:"In PRINCE2, a <strong>project</strong> is a temporary organization created for the purpose of delivering one or more business products according to an agreed Business Case." },
+  { id:1058, cat:"General", q:"What does tailoring mean in PRINCE2?", opts:["Removing PRINCE2 principles that are not relevant", "Creating a new project management methodology based on PRINCE2", "Adapting the PRINCE2 method to suit the specific environment, scale and complexity of the project", "Applying every PRINCE2 process and theme without modification"], ans:2, exp:"<strong>Tailoring</strong> refers to adapting PRINCE2 to the specific environment, size, complexity, importance and risk of the project. Principles cannot be tailored — only themes, processes and management products." },
+  { id:1059, cat:"General", q:"Which aspects of PRINCE2 CANNOT be tailored?", opts:["Themes (Practices)", "Processes", "Management products", "Principles"], ans:3, exp:"The PRINCE2 <strong>principles cannot be tailored</strong> — they must all be applied on every project. However, the themes, processes and management products can be tailored to suit the project context." },
+  { id:1060, cat:"General", q:"What is the minimum number of management stages required in a PRINCE2 project?", opts:["One", "Two", "Three", "As many as the Project Manager decides"], ans:1, exp:"PRINCE2 requires at least <strong>two stages</strong>: the initiation stage and at least one delivery stage. The initiation stage (where PID is created) cannot be combined with a delivery stage." },
+  { id:1061, cat:"General", q:"What are the six aspects of project performance in PRINCE2 that must be managed?", opts:["Time, Cost, Quality, Scope, Benefits, Risk", "Time, Cost, Resources, Scope, Benefits, Risk", "Time, Cost, Quality, Scope, Risk, Stakeholders", "Time, Cost, Quality, People, Benefits, Risk"], ans:0, exp:"PRINCE2 defines six aspects of project performance: <strong>Time, Cost, Quality, Scope, Benefits and Risk</strong>. Each has tolerances defining acceptable deviations before escalation is required." },
+  { id:1062, cat:"General", q:"Which report provides summarized information at the end of a management stage for the Project Board to review?", opts:["Checkpoint Report", "Highlight Report", "End Stage Report", "Exception Report"], ans:2, exp:"The <strong>End Stage Report</strong> is produced at the end of each management stage. It provides the Project Board with a summary of the stage performance compared against the stage plan." },
+  { id:1063, cat:"General", q:"What is the Communication Management Approach used for?", opts:["Defining how the project will manage risks", "Defining the stakeholders communication needs and how they will be met during the project", "Planning the project budget and schedule", "Tracking all issues raised on the project"], ans:1, exp:"The <strong>Communication Management Approach</strong> defines the stakeholders communication needs, information requirements, and the communication methods to be used throughout the project." },
+  { id:1064, cat:"General", q:"In PRINCE2, which document replaces the Project Brief once the project has been authorized for initiation?", opts:["Business Case", "Stage Plan", "Project Initiation Documentation (PID)", "Project Mandate"], ans:2, exp:"Once the project is authorized, the Project Brief is superseded by the <strong>Project Initiation Documentation (PID)</strong>, which is the definitive document of what the project is set up to do." },
+  { id:1065, cat:"General", q:"Fill in the missing word: A PRINCE2 project has [?] business justification.", opts:["Continued", "Approved", "Verified", "Updated"], ans:0, exp:"The first PRINCE2 principle is <strong>'Ensure Continued Business Justification'</strong>. A project must have a justifiable reason to start and this justification must remain valid throughout." },
+  { id:1066, cat:"General", q:"Which PRINCE2 principle is applied when tolerances are set for the three levels of plan?", opts:["Manage by Stages", "Manage by Exception", "Define Roles and Responsibilities", "Ensure Continued Business Justification"], ans:1, exp:"<strong>Manage by Exception</strong> — tolerances at three levels (project, stage, work package) express the delegation of authority. Each level escalates when its tolerances are forecast to be exceeded." },
+  { id:1067, cat:"General", q:"In PRINCE2 7, what are the former Themes now called?", opts:["Methods", "Practices", "Procedures", "Processes"], ans:1, exp:"In <strong>PRINCE2 7th Edition (2023)</strong>, the seven Themes from earlier versions were renamed to <strong>Practices</strong>: Business Case, Organization, Quality, Plans, Risk, Change, and Progress." },
+  { id:1068, cat:"General", q:"Which statement about PRINCE2 is CORRECT?", opts:["PRINCE2 can only be applied to large projects", "PRINCE2 can be applied to any type of project regardless of size or industry", "PRINCE2 must be applied in full and cannot be tailored", "PRINCE2 only applies to IT projects"], ans:1, exp:"PRINCE2 is a <strong>universal method</strong> that can be applied to any type, size or industry of project. The Tailor to Suit the Project principle ensures it is scaled appropriately for the specific context." },
+  { id:1069, cat:"General", q:"Which of the following is NOT a management product in PRINCE2?", opts:["Risk Register", "Highlight Report", "Exception Report", "Gantt Chart"], ans:3, exp:"A <strong>Gantt Chart</strong> is not a specific PRINCE2 management product. PRINCE2 defines specific management products (registers, logs, plans, reports). Gantt charts may be used but are not mandated by PRINCE2." },
+  { id:1070, cat:"General", q:"Fill in the missing word: PRINCE2 defines [?] for each project objective to establish limits of delegated authority.", opts:["Resources", "Tolerances", "Responsibilities", "Milestones"], ans:1, exp:"<strong>Tolerances</strong> are the permissible deviations from planned values. They are defined for 6 dimensions: time, cost, scope, quality, risk, benefits. Exceeding tolerances triggers mandatory escalation." },
+  { id:1071, cat:"General", q:"Which of the following is a benefit of applying the Manage by Stages principle?", opts:["The project can run without a Project Board", "The project will have review and decision points so that progress can be assessed and commitments can be made on a stage-by-stage basis", "The project team can work autonomously without reporting", "The project manager can override the project board decisions"], ans:1, exp:"Applying <strong>Manage by Stages</strong> means the project has review and decision points so that <strong>progress can be assessed</strong> and commitments can be made on a stage-by-stage basis." },
+  { id:1072, cat:"General", q:"Which document records lessons identified and acted upon during the project for future use?", opts:["Issue Register", "Daily Log", "Lessons Log", "Quality Register"], ans:2, exp:"The <strong>Lessons Log</strong> is used to capture lessons identified during the project. These are distilled into the Lessons Report for future projects." },
+  { id:1073, cat:"General", q:"What is the role of the Change Authority in PRINCE2?", opts:["The Project Board under another name", "A role to which the Project Board may delegate authority to approve certain types of changes", "An external regulatory body", "The Project Manager acting as a change agent"], ans:1, exp:"The <strong>Change Authority</strong> is a role to which the Project Board can delegate authority to approve certain types of requests for change or off-specifications, relieving the Project Board of minor change decisions." },
+  { id:1074, cat:"General", q:"Which correctly describes the relationship between a project mandate and a project brief?", opts:["The project mandate is created from the project brief", "The project mandate triggers Starting Up a Project; the project brief is the output of Starting Up a Project", "They are the same document with different names", "The project brief is created by corporate management before the project starts"], ans:1, exp:"The <strong>project mandate</strong> triggers Starting Up a Project. The <strong>project brief</strong> is created during Starting Up a Project and used to seek authorization to initiate the project." },
+  { id:1075, cat:"General", q:"What does product-based planning in PRINCE2 involve?", opts:["A planning technique that focuses on costs and timelines first", "A planning technique that identifies and analyses products before identifying activities and dependencies", "A technique for planning team resources", "A method for tracking project milestones only"], ans:1, exp:"<strong>Product-based planning</strong> focuses on defining and analysing products to be delivered before identifying activities and dependencies. It involves: Product Breakdown Structure, Product Descriptions, and Product Flow Diagram." },
+
+  ];
+
+// ============================
+// STATE
+// ============================
+let state = {
+  studyQueue: [],
+  studyIndex: 0,
+  studyAnswered: false,
+  studyCat: 'all',
+  examQuestions: [],
+  examIndex: 0,
+  examAnswers: [],
+  examTimer: null,
+  examSeconds: 3600,
+  examFinished: false,
+  scores: JSON.parse(localStorage.getItem('p2_scores') || '{}'),
+  examCount: parseInt(localStorage.getItem('p2_examCount') || '0')
+};
+
+const CATS = [...new Set(QUESTIONS.map(q=>q.cat))];
+
+// ============================
+// INIT
+// ============================
+document.getElementById('totalQ').textContent = QUESTIONS.length;
+document.getElementById('stat-total').textContent = QUESTIONS.length;
+updateStats();
+buildCatGrid();
+
+function updateStats() {
+  const scores = state.scores;
+  const answered = Object.keys(scores).length;
+  const correct = Object.values(scores).filter(v=>v===true).length;
+  document.getElementById('stat-answered').textContent = answered;
+  document.getElementById('stat-correct').textContent = answered ? Math.round(correct/answered*100)+'%' : '0%';
+  document.getElementById('stat-exams').textContent = state.examCount;
+}
+
+function buildCatGrid() {
+  const grid = document.getElementById('cat-grid');
+  grid.innerHTML = '';
+  const allBtn = document.createElement('div');
+  allBtn.className = 'cat-btn';
+  const allCount = QUESTIONS.length;
+  const allAnswered = QUESTIONS.filter(q=>state.scores[q.id]!==undefined).length;
+  const allCorrect = QUESTIONS.filter(q=>state.scores[q.id]===true).length;
+  allBtn.innerHTML = `<div class="cat-name">All Categories</div><div class="cat-count">${allAnswered}/${allCount} · ${allAnswered?Math.round(allCorrect/allAnswered*100):0}%</div><div class="cat-progress"><div class="cat-bar" style="width:${Math.round(allAnswered/allCount*100)}%"></div></div>`;
+  allBtn.onclick = ()=>startStudy('all');
+  grid.appendChild(allBtn);
+  CATS.forEach(cat => {
+    const qs = QUESTIONS.filter(q=>q.cat===cat);
+    const answered = qs.filter(q=>state.scores[q.id]!==undefined).length;
+    const correct = qs.filter(q=>state.scores[q.id]===true).length;
+    const btn = document.createElement('div');
+    btn.className = 'cat-btn';
+    btn.innerHTML = `<div class="cat-name">${cat}</div><div class="cat-count">${answered}/${qs.length} · ${answered?Math.round(correct/answered*100):0}%</div><div class="cat-progress"><div class="cat-bar" style="width:${Math.round(answered/qs.length*100)}%"></div></div>`;
+    btn.onclick = ()=>startStudy(cat);
+    grid.appendChild(btn);
+  });
+}
+
+// ============================
+// STUDY
+// ============================
+function startStudy(cat) {
+  state.studyCat = cat;
+  let pool = cat === 'all' ? [...QUESTIONS] : QUESTIONS.filter(q=>q.cat===cat);
+  // Shuffle, prioritize unanswered
+  const unanswered = pool.filter(q=>state.scores[q.id]===undefined);
+  const wrong = pool.filter(q=>state.scores[q.id]===false);
+  const correct = pool.filter(q=>state.scores[q.id]===true);
+  state.studyQueue = [...shuffle(unanswered), ...shuffle(wrong), ...shuffle(correct)];
+  state.studyIndex = 0;
+  state.studyAnswered = false;
+  showScreen('study');
+  renderStudyQ();
+}
+
+function renderStudyQ() {
+  if(state.studyIndex >= state.studyQueue.length) {
+    document.getElementById('study-question').textContent = 'You have completed all questions in this category! 🎉';
+    document.getElementById('study-options').innerHTML = '';
+    document.getElementById('study-explanation').className = 'explanation';
+    document.getElementById('study-next-btn').style.display='none';
+    buildCatGrid(); updateStats();
+    return;
+  }
+  const q = state.studyQueue[state.studyIndex];
+  const total = state.studyQueue.length;
+  const pct = Math.round(state.studyIndex/total*100);
+  document.getElementById('study-cat').textContent = q.cat;
+  document.getElementById('study-num').textContent = `${state.studyIndex+1} / ${total}`;
+  document.getElementById('study-progress').style.width = pct+'%';
+  document.getElementById('study-question').textContent = q.q;
+  document.getElementById('study-explanation').className = 'explanation';
+  document.getElementById('study-next-btn').style.display='none';
+  const hintBtn = document.getElementById('study-hint-btn');
+  if(hintBtn) hintBtn.style.display='inline-block';
+  state.studyAnswered = false;
+  const letters = ['A','B','C','D'];
+  const opts = document.getElementById('study-options');
+  opts.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const div = document.createElement('div');
+    div.className = 'option';
+    div.innerHTML = `<span class="option-letter">${letters[i]}</span><span>${opt}</span>`;
+    div.onclick = ()=>answerStudy(i, q, div);
+    opts.appendChild(div);
+  });
+}
+
+function answerStudy(chosen, q, el) {
+  if(state.studyAnswered) return;
+  state.studyAnswered = true;
+  const allOpts = document.querySelectorAll('#study-options .option');
+  allOpts.forEach(o=>o.classList.add('answered'));
+  const correct = q.ans;
+  if(chosen === correct) {
+    el.classList.add('correct');
+    state.scores[q.id] = true;
+  } else {
+    el.classList.add('wrong');
+    allOpts[correct].classList.add('show-correct');
+    state.scores[q.id] = false;
+  }
+  const exp = document.getElementById('study-explanation');
+  exp.innerHTML = q.exp;
+  exp.className = 'explanation show';
+  document.getElementById('study-next-btn').style.display='inline-block';
+  const hintBtn = document.getElementById('study-hint-btn');
+  if(hintBtn) hintBtn.style.display='none';
+  saveScores();
+}
+
+function showHint() {
+  if(state.studyAnswered) return;
+  const q = state.studyQueue[state.studyIndex];
+  const allOpts = document.querySelectorAll('#study-options .option');
+  let incorrects = [];
+  q.opts.forEach((opt, i) => { if(i !== q.ans) incorrects.push(i); });
+  incorrects = shuffle(incorrects).slice(0, 2);
+  incorrects.forEach(idx => {
+    allOpts[idx].style.opacity = '0.2';
+    allOpts[idx].style.pointerEvents = 'none';
+  });
+  document.getElementById('study-hint-btn').style.display='none';
+}
+
+function nextStudyQ() {
+  state.studyIndex++;
+  state.studyAnswered = false;
+  renderStudyQ();
+}
+
+// ============================
+// EXAM
+// ============================
+function beginExam() {
+  const pool = shuffle([...QUESTIONS]).slice(0,60);
+  state.examQuestions = pool;
+  state.examIndex = 0;
+  state.examAnswers = new Array(pool.length).fill(null);
+  state.examSeconds = 3600;
+  state.examFinished = false;
+  document.getElementById('exam-start').style.display='none';
+  document.getElementById('exam-running').style.display='block';
+  document.getElementById('exam-results').style.display='none';
+  document.getElementById('exam-review').style.display='none';
+  if(state.examTimer) clearInterval(state.examTimer);
+  state.examTimer = setInterval(tickTimer, 1000);
+  renderExamQ();
+}
+
+function tickTimer() {
+  state.examSeconds--;
+  const m = Math.floor(state.examSeconds/60).toString().padStart(2,'0');
+  const s = (state.examSeconds%60).toString().padStart(2,'0');
+  const t = document.getElementById('exam-timer');
+  t.textContent = `${m}:${s}`;
+  if(state.examSeconds <= 300) t.className = 'exam-timer critical';
+  else if(state.examSeconds <= 600) t.className = 'exam-timer warning';
+  if(state.examSeconds <= 0) { clearInterval(state.examTimer); finishExam(); }
+}
+
+function renderExamQ() {
+  const q = state.examQuestions[state.examIndex];
+  const total = state.examQuestions.length;
+  document.getElementById('exam-cat').textContent = q.cat;
+  document.getElementById('exam-num').textContent = `${state.examIndex+1} / ${total}`;
+  document.getElementById('exam-progress').style.width = Math.round((state.examIndex+1)/total*100)+'%';
+  document.getElementById('exam-question').textContent = q.q;
+  const letters = ['A','B','C','D'];
+  const opts = document.getElementById('exam-options');
+  opts.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const div = document.createElement('div');
+    div.className = 'option';
+    if(state.examAnswers[state.examIndex] === i) div.classList.add('selected');
+    div.innerHTML = `<span class="option-letter">${letters[i]}</span><span>${opt}</span>`;
+    div.onclick = ()=>answerExam(i);
+    opts.appendChild(div);
+  });
+  const nextBtn = document.getElementById('exam-next-btn');
+  const finishBtn = document.getElementById('exam-finish-btn');
+  if(state.examIndex < total-1) {
+    nextBtn.style.display = state.examAnswers[state.examIndex]!==null ? 'inline-block' : 'none';
+    finishBtn.style.display='none';
+  } else {
+    nextBtn.style.display='none';
+    finishBtn.style.display = state.examAnswers[state.examIndex]!==null ? 'inline-block' : 'none';
+  }
+}
+
+function answerExam(chosen) {
+  state.examAnswers[state.examIndex] = chosen;
+  const allOpts = document.querySelectorAll('#exam-options .option');
+  allOpts.forEach((o,i)=>{ o.className='option'; if(i===chosen)o.classList.add('selected'); });
+  const nextBtn = document.getElementById('exam-next-btn');
+  const finishBtn = document.getElementById('exam-finish-btn');
+  if(state.examIndex < state.examQuestions.length-1) {
+    nextBtn.style.display='inline-block';
+    finishBtn.style.display='none';
+  } else {
+    nextBtn.style.display='none';
+    finishBtn.style.display='inline-block';
+  }
+}
+
+function nextExamQ() {
+  state.examIndex++;
+  renderExamQ();
+}
+
+function finishExam() {
+  if(state.examFinished) return;
+  state.examFinished = true;
+  clearInterval(state.examTimer);
+  const total = state.examQuestions.length;
+  let correct = 0;
+  state.examQuestions.forEach((q,i)=>{ if(state.examAnswers[i]===q.ans) correct++; });
+  const pct = Math.round(correct/total*100);
+  const passed = pct >= 55;
+  state.examCount++;
+  localStorage.setItem('p2_examCount', state.examCount);
+  document.getElementById('exam-running').style.display='none';
+  document.getElementById('exam-results').style.display='block';
+  const circle = document.getElementById('result-circle');
+  circle.className = 'result-circle '+(passed?'pass':'fail');
+  document.getElementById('result-pct').textContent = pct+'%';
+  document.getElementById('result-verdict').textContent = passed ? '✓ PASSED' : '✗ FAILED';
+  document.getElementById('result-score').textContent = `${correct} of ${total} correct · Pass mark: 55% (33/60)`;
+  // breakdown by cat
+  const catMap = {};
+  state.examQuestions.forEach((q,i)=>{
+    if(!catMap[q.cat]) catMap[q.cat]={correct:0,total:0};
+    catMap[q.cat].total++;
+    if(state.examAnswers[i]===q.ans) catMap[q.cat].correct++;
+  });
+  const breakdown = document.getElementById('result-breakdown');
+  breakdown.innerHTML = '';
+  Object.entries(catMap).forEach(([cat,v])=>{
+    const pctCat = Math.round(v.correct/v.total*100);
+    const color = pctCat>=70?'#48bb78':pctCat>=55?'#f6ad55':'#fc8181';
+    breakdown.innerHTML += `<div class="rb-card"><div class="rb-cat">${cat}</div><div class="rb-score" style="color:${color}">${pctCat}%</div><div style="font-size:0.75rem;">${v.correct}/${v.total}</div><div class="rb-bar"><div class="rb-fill" style="width:${pctCat}%;background:${color}"></div></div></div>`;
+  });
+  updateStats(); buildCatGrid();
+}
+
+function reviewExam() {
+  document.getElementById('exam-results').style.display='none';
+  document.getElementById('exam-review').style.display='block';
+  const list = document.getElementById('review-list');
+  list.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  state.examQuestions.forEach((q,i)=>{
+    const userAns = state.examAnswers[i];
+    const isCorrect = userAns === q.ans;
+    const div = document.createElement('div');
+    div.style.cssText = 'border:1px solid '+(isCorrect?'#48bb78':'#fc8181')+';border-radius:10px;padding:14px 16px;margin-bottom:12px;';
+    div.innerHTML = `<div style="font-size:0.75rem;margin-bottom:6px">${i+1}. ${q.cat} · ${isCorrect?'<span style=>Correct ✓</span>':'<span style=>Incorrect ✗</span>'}</div><div style="font-size:0.9rem;margin-bottom:10px;">${q.q}</div>${q.opts.map((o,j)=>`<div style="padding:5px 10px;border-radius:6px;font-size:0.85rem;margin:3px 0;${j===q.ans?'':j===userAns&&!isCorrect?'':''}">${letters[j]}. ${o}${j===q.ans?' ✓':''}${j===userAns&&!isCorrect?' (Your answer)':''}</div>`).join('')}<div style="margin-top:10px;font-size:0.82rem;border-top:1px solid #2d3748;padding-top:8px">${q.exp}</div>`;
+    list.appendChild(div);
+  });
+}
+
+function resetExam() {
+  clearInterval(state.examTimer);
+  document.getElementById('exam-start').style.display='block';
+  document.getElementById('exam-running').style.display='none';
+  document.getElementById('exam-results').style.display='none';
+  document.getElementById('exam-review').style.display='none';
+}
+
+// ============================
+// STATS SCREEN
+// ============================
+function renderStatsScreen() {
+  const scores = state.scores;
+  let html = '';
+  const answered = Object.keys(scores).length;
+  const correct = Object.values(scores).filter(v=>v===true).length;
+  const pct = answered ? Math.round(correct/answered*100) : 0;
+  html += `<div class="info-box"><h4>General</h4>Answered: ${answered}/${QUESTIONS.length}<br>Correct: ${correct} (${pct}%)<br>Mock Exams: ${state.examCount}</div>`;
+  CATS.forEach(cat=>{
+    const qs = QUESTIONS.filter(q=>q.cat===cat);
+    const a = qs.filter(q=>scores[q.id]!==undefined).length;
+    const c = qs.filter(q=>scores[q.id]===true).length;
+    const p = a ? Math.round(c/a*100) : 0;
+    const color = p>=70?'#48bb78':p>=55?'#f6ad55':'#fc8181';
+    html += `<div class="info-box"><h4>${cat}</h4>Answered: ${a}/${qs.length} · Correct: <span style="color:${color}">${p}%</span></div>`;
+  });
+  document.getElementById('stats-content').innerHTML = html;
+}
+
+function resetStats() {
+  if(confirm('Reset all statistics?')) {
+    state.scores = {};
+    state.examCount = 0;
+    localStorage.removeItem('p2_scores');
+    localStorage.removeItem('p2_examCount');
+    updateStats(); buildCatGrid(); renderStatsScreen();
+  }
+}
+
+// ============================
+// HELPERS
+// ============================
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  const idx = ['home','study','exam','theory','stats'].indexOf(name);
+  document.querySelectorAll('.nav-btn')[idx].classList.add('active');
+  if(name==='stats') renderStatsScreen();
+  if(name==='theory' && !window.mermaidRendered) {
+    window.mermaidRendered = true;
+    import('https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs').then((m) => {
+      m.default.initialize({ startOnLoad: false, theme: 'base', themeVariables: { primaryColor: '#FDFBF7', primaryTextColor: '#333333', primaryBorderColor: '#DA7756', lineColor: '#C0CCC5', secondaryColor: '#EAE6DF', tertiaryColor: '#FAF9F6' } });
+      m.default.run({ querySelector: '.mermaid' });
+    });
+  }
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+
+function saveScores() {
+  localStorage.setItem('p2_scores', JSON.stringify(state.scores));
+  updateStats(); buildCatGrid();
+}
+</script>
+</body>
+</html>
