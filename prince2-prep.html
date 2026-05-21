@@ -255,6 +255,101 @@
   <p class="subtitle">Key concepts for the exam</p>
 
   <!-- ══════════════════════════════════════════════════════════
+       QUICK REFERENCE — 2-minute cheat sheet
+       ══════════════════════════════════════════════════════════ -->
+  <div style="margin-bottom:32px; border:2px solid #DA7756; border-radius:16px; overflow:hidden; font-family:'Inter',-apple-system,sans-serif;">
+    <!-- Header toggle -->
+    <div id="qr-header" onclick="document.getElementById('qr-body').style.display=document.getElementById('qr-body').style.display==='none'?'block':'none'; this.querySelector('.qr-arrow').textContent=document.getElementById('qr-body').style.display==='none'?'▶':'▼';"
+      style="background:#DA7756; color:#fff; padding:14px 20px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none;">
+      <span style="font-weight:700; font-size:1rem; letter-spacing:-0.01em;">⚡ Quick Reference — 2-minute scan</span>
+      <span class="qr-arrow" style="font-size:0.85rem; opacity:0.85;">▼</span>
+    </div>
+
+    <div id="qr-body" style="padding:20px; background:#fffdf9;">
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; font-size:0.8rem; line-height:1.6;">
+
+        <!-- 7s block -->
+        <div style="background:#fff; border:1px solid #EAE6DF; border-radius:10px; padding:14px;">
+          <div style="font-weight:700; color:#DA7756; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px;">The 7s</div>
+          <div style="margin-bottom:6px;"><span style="font-weight:600;">Principles:</span> Continued Business Justification · Learn from Experience · Defined Roles &amp; Responsibilities · Manage by Stages · Manage by Exception · Focus on Products · Tailor to suit</div>
+          <div style="margin-bottom:6px;"><span style="font-weight:600;">Practices (Themes):</span> Business Case · Organisation · Quality · Plans · Risk · Change · Progress</div>
+          <div><span style="font-weight:600;">Processes:</span> <span style="letter-spacing:0.03em;">SU → IP → DP → CS → MP → SB → CP</span><br>
+            <span style="color:#666; font-size:0.75rem;">Starting Up · Initiating · Directing · Controlling Stage · Managing Product Delivery · Managing Stage Boundary · Closing</span>
+          </div>
+        </div>
+
+        <!-- Exam + Elements -->
+        <div style="background:#fff; border:1px solid #EAE6DF; border-radius:10px; padding:14px;">
+          <div style="font-weight:700; color:#4A8B5D; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px;">Exam &amp; Key Numbers</div>
+          <table style="width:100%; border-collapse:collapse; font-size:0.78rem;">
+            <tr><td style="padding:2px 0; color:#666;">Questions</td><td style="font-weight:600; text-align:right;">60</td></tr>
+            <tr><td style="padding:2px 0; color:#666;">Time</td><td style="font-weight:600; text-align:right;">60 min</td></tr>
+            <tr><td style="padding:2px 0; color:#666;">Pass mark</td><td style="font-weight:600; text-align:right;">55% (33/60)</td></tr>
+            <tr><td style="padding:2px 0; color:#666;">Format</td><td style="font-weight:600; text-align:right;">1 of 4, closed book</td></tr>
+            <tr style="border-top:1px solid #EAE6DF;"><td style="padding:4px 0 2px; color:#666;">4 Integrated Elements</td><td style="font-weight:600; text-align:right; font-size:0.75rem;">People · Practices<br>Processes · Principles</td></tr>
+            <tr><td style="padding:2px 0; color:#666;">6 Tolerances</td><td style="font-weight:600; text-align:right; font-size:0.75rem;">Time · Cost · Quality<br>Scope · Risk · Benefit</td></tr>
+          </table>
+        </div>
+
+        <!-- Roles -->
+        <div style="background:#fff; border:1px solid #EAE6DF; border-radius:10px; padding:14px;">
+          <div style="font-weight:700; color:#7C6BB0; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px;">Roles</div>
+          <div style="margin-bottom:5px;"><span style="font-weight:600;">Project Board:</span><br>Executive · Senior User(s) · Senior Supplier(s)</div>
+          <div style="margin-bottom:3px;">Project Manager (PM)</div>
+          <div style="margin-bottom:3px;">Team Manager</div>
+          <div style="margin-bottom:3px;">Project Assurance (PB responsibility)</div>
+          <div style="margin-bottom:3px;">Project Support</div>
+          <div>Change Authority</div>
+          <div style="margin-top:6px; padding-top:6px; border-top:1px solid #EAE6DF; font-size:0.75rem; color:#555;">
+            <span style="font-weight:600;">Escalation:</span> Corporate → PB → PM → TM<br>
+            (exception when tolerance breached)
+          </div>
+        </div>
+
+        <!-- Key Documents -->
+        <div style="background:#fff; border:1px solid #EAE6DF; border-radius:10px; padding:14px;">
+          <div style="font-weight:700; color:#2E86AB; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px;">Management Products</div>
+          <div style="margin-bottom:4px; font-weight:600; font-size:0.75rem; color:#444;">Baseline:</div>
+          <div style="color:#333; margin-bottom:6px;">PID · Business Case · Plans</div>
+          <div style="margin-bottom:4px; font-weight:600; font-size:0.75rem; color:#444;">Registers &amp; Logs:</div>
+          <div style="color:#333; margin-bottom:6px;">Risk Register · Issue Register · Quality Register · Lessons Log · Daily Log</div>
+          <div style="margin-bottom:4px; font-weight:600; font-size:0.75rem; color:#444;">Reports:</div>
+          <div style="color:#333;">Highlight · Checkpoint · End Stage · Exception · End of Project</div>
+        </div>
+
+        <!-- Progress controls -->
+        <div style="background:#fff; border:1px solid #EAE6DF; border-radius:10px; padding:14px;">
+          <div style="font-weight:700; color:#E07B39; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px;">Progress Controls</div>
+          <div style="margin-bottom:8px;"><span style="font-weight:600; font-size:0.75rem; color:#666; display:block; margin-bottom:2px;">TIME-DRIVEN</span>
+            <span style="background:#FEF3C7; border-radius:4px; padding:1px 6px; font-size:0.75rem;">Checkpoint Report</span> TM → PM<br>
+            <span style="background:#FEF3C7; border-radius:4px; padding:1px 6px; font-size:0.75rem;">Highlight Report</span> PM → PB
+          </div>
+          <div><span style="font-weight:600; font-size:0.75rem; color:#666; display:block; margin-bottom:2px;">EVENT-DRIVEN</span>
+            Exception Report · End Stage Report · End of Project Report · Lessons Report
+          </div>
+        </div>
+
+        <!-- Risk responses -->
+        <div style="background:#fff; border:1px solid #EAE6DF; border-radius:10px; padding:14px;">
+          <div style="font-weight:700; color:#C0392B; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px;">Risk Responses</div>
+          <div style="margin-bottom:6px;">
+            <span style="font-weight:600; font-size:0.75rem; color:#C0392B;">THREATS</span><br>
+            Avoid · Reduce · Transfer · Accept · Share
+          </div>
+          <div style="margin-bottom:6px;">
+            <span style="font-weight:600; font-size:0.75rem; color:#4A8B5D;">OPPORTUNITIES</span><br>
+            Exploit · Enhance · Transfer · Accept · Share
+          </div>
+          <div style="margin-top:6px; padding-top:6px; border-top:1px solid #EAE6DF; font-size:0.75rem; color:#555;">
+            <span style="font-weight:600;">Delivery approaches:</span> Linear · Iterative · Hybrid
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
        BLOKI DODANE: uzupełnienie luk z pytań egzaminacyjnych
        Temat: Key Concepts in Projects and PRINCE2
        ══════════════════════════════════════════════════════════ -->
