@@ -75,10 +75,14 @@
   .option {  border: 1px solid #EAE6DF; border-radius: 12px; padding: 18px 24px; cursor: pointer; display: flex; align-items: center; transition: all 0.2s; font-family: 'Inter', sans-serif; font-size: 1.05rem;  box-shadow: 0 2px 6px rgba(0,0,0,0.01); }
   .option:hover {  border- }
   .option.selected { border-  font-weight: 500; }
-  .option.correct { border-   }
-  .option.wrong { border-   }
-  .option.show-correct { border- border-width: 2px; }
+  .option.correct { background: #d1fae5; border: 2px solid #059669 !important; color: #065f46; }
+  .option.wrong   { background: #fee2e2; border: 2px solid #dc2626 !important; color: #991b1b; }
+  .option.show-correct { background: #d1fae5; border: 2px solid #059669 !important; color: #065f46; }
+  .option.disabled { opacity: 0.45; pointer-events: none; }
   .option.answered { pointer-events: none; }
+  .option.correct .option-letter  { background: #059669 !important; color: #fff !important; }
+  .option.wrong .option-letter    { background: #dc2626 !important; color: #fff !important; }
+  .option.show-correct .option-letter { background: #059669 !important; color: #fff !important; }
   .option-letter {   width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 600; margin-right: 16px; font-size: 0.95rem; flex-shrink: 0; }
   
   .explanation { display: none;  border-left: 4px solid #4A8B5D; border-radius: 0 12px 12px 0; padding: 24px 32px; margin-bottom: 32px; font-size: 1.15rem;  line-height: 1.6; }
@@ -96,8 +100,8 @@
   .exam-timer.warning {  }
   .exam-timer.critical {  animation: pulse 1s infinite; }
   .result-circle { width: 160px; height: 160px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 24px; border: 6px solid #EAE6DF; }
-  .result-circle.pass { border-  }
-  .result-circle.fail { border-  }
+  .result-circle.pass { border-color: #059669; color: #065f46; }
+  .result-circle.fail { border-color: #dc2626; color: #991b1b; }
   .result-circle span { font-size: 2.8rem; font-weight: 600; line-height: 1; letter-spacing: -0.02em;}
   .result-circle small { font-size: 1rem; font-weight: 600; margin-top: 4px; letter-spacing: 0.05em;}
   
@@ -1440,16 +1444,24 @@ function answerStudy(chosen, q, el) {
   if(state.studyAnswered) return;
   state.studyAnswered = true;
   const allOpts = document.querySelectorAll('#study-options .option');
-  allOpts.forEach(o=>o.classList.add('answered'));
-  const correct = q.ans;
-  if(chosen === correct) {
-    el.classList.add('correct');
-    state.scores[q.id] = true;
-  } else {
-    el.classList.add('wrong');
-    allOpts[correct].classList.add('show-correct');
-    state.scores[q.id] = false;
-  }
+  const correctIdx = q.ans;
+  allOpts.forEach((o, i) => {
+    const letterEl = o.querySelector('.option-letter');
+    if(i === chosen && chosen === correctIdx) {
+      o.classList.add('correct');
+      if(letterEl) letterEl.textContent = '✓';
+    } else if(i === chosen && chosen !== correctIdx) {
+      o.classList.add('wrong');
+      if(letterEl) letterEl.textContent = '✗';
+    } else if(i === correctIdx && chosen !== correctIdx) {
+      o.classList.add('show-correct');
+      if(letterEl) letterEl.textContent = '✓';
+    } else {
+      o.classList.add('disabled');
+    }
+    o.classList.add('answered');
+  });
+  state.scores[q.id] = chosen === correctIdx;
   const exp = document.getElementById('study-explanation');
   exp.innerHTML = q.exp;
   exp.className = 'explanation show';
@@ -1512,6 +1524,7 @@ function tickTimer() {
 function renderExamQ() {
   const q = state.examQuestions[state.examIndex];
   const total = state.examQuestions.length;
+  const userAns = state.examAnswers[state.examIndex];
   document.getElementById('exam-cat').textContent = q.cat;
   document.getElementById('exam-num').textContent = `${state.examIndex+1} / ${total}`;
   document.getElementById('exam-progress').style.width = Math.round((state.examIndex+1)/total*100)+'%';
@@ -1522,26 +1535,59 @@ function renderExamQ() {
   q.opts.forEach((opt, i) => {
     const div = document.createElement('div');
     div.className = 'option';
-    if(state.examAnswers[state.examIndex] === i) div.classList.add('selected');
-    div.innerHTML = `<span class="option-letter">${letters[i]}</span><span>${opt}</span>`;
+    let letter = letters[i];
+    if(userAns !== null) {
+      // already answered — restore visual state
+      div.classList.add('answered');
+      if(i === userAns && userAns === q.ans) {
+        div.classList.add('correct'); letter = '✓';
+      } else if(i === userAns && userAns !== q.ans) {
+        div.classList.add('wrong'); letter = '✗';
+      } else if(i === q.ans && userAns !== q.ans) {
+        div.classList.add('show-correct'); letter = '✓';
+      } else {
+        div.classList.add('disabled');
+      }
+    }
+    div.innerHTML = `<span class="option-letter">${letter}</span><span>${opt}</span>`;
     div.onclick = ()=>answerExam(i);
     opts.appendChild(div);
   });
   const nextBtn = document.getElementById('exam-next-btn');
   const finishBtn = document.getElementById('exam-finish-btn');
   if(state.examIndex < total-1) {
-    nextBtn.style.display = state.examAnswers[state.examIndex]!==null ? 'inline-block' : 'none';
+    nextBtn.style.display = userAns !== null ? 'inline-block' : 'none';
     finishBtn.style.display='none';
   } else {
     nextBtn.style.display='none';
-    finishBtn.style.display = state.examAnswers[state.examIndex]!==null ? 'inline-block' : 'none';
+    finishBtn.style.display = userAns !== null ? 'inline-block' : 'none';
   }
 }
 
 function answerExam(chosen) {
+  // Lock after first answer — no changing mind in exam
+  if(state.examAnswers[state.examIndex] !== null) return;
   state.examAnswers[state.examIndex] = chosen;
+  const q = state.examQuestions[state.examIndex];
+  const correctIdx = q.ans;
   const allOpts = document.querySelectorAll('#exam-options .option');
-  allOpts.forEach((o,i)=>{ o.className='option'; if(i===chosen)o.classList.add('selected'); });
+  const letters = ['A','B','C','D'];
+  allOpts.forEach((o, i) => {
+    const letterEl = o.querySelector('.option-letter');
+    o.classList.add('answered');
+    if(i === chosen && chosen === correctIdx) {
+      o.classList.add('correct');
+      if(letterEl) letterEl.textContent = '✓';
+    } else if(i === chosen && chosen !== correctIdx) {
+      o.classList.add('wrong');
+      if(letterEl) letterEl.textContent = '✗';
+    } else if(i === correctIdx && chosen !== correctIdx) {
+      o.classList.add('show-correct');
+      if(letterEl) letterEl.textContent = '✓';
+    } else {
+      o.classList.add('disabled');
+    }
+  });
   const nextBtn = document.getElementById('exam-next-btn');
   const finishBtn = document.getElementById('exam-finish-btn');
   if(state.examIndex < state.examQuestions.length-1) {
@@ -1574,8 +1620,9 @@ function finishExam() {
   const circle = document.getElementById('result-circle');
   circle.className = 'result-circle '+(passed?'pass':'fail');
   document.getElementById('result-pct').textContent = pct+'%';
-  document.getElementById('result-verdict').textContent = passed ? '✓ PASSED' : '✗ FAILED';
-  document.getElementById('result-score').textContent = `${correct} of ${total} correct · Pass mark: 55% (33/60)`;
+  document.getElementById('result-verdict').textContent = passed ? 'PASS' : 'FAIL';
+  const scoreEl = document.getElementById('result-score');
+  scoreEl.innerHTML = `<strong>${correct}/${total} &mdash; ${pct}%</strong><br><span style="font-size:0.82rem">Pass mark: 55% (33/60) &nbsp;·&nbsp; ${passed ? '<span style="color:#059669;font-weight:700">✓ PASSED</span>' : '<span style="color:#dc2626;font-weight:700">✗ FAILED</span>'}</span>`;
   // breakdown by cat
   const catMap = {};
   state.examQuestions.forEach((q,i)=>{
