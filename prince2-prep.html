@@ -127,6 +127,7 @@
   <button class="nav-btn active" onclick="showScreen('home')">Home</button>
   <button class="nav-btn" onclick="state.studyQueue.length > 0 ? showScreen('study') : startStudy('all')">Study Mode</button>
   <button class="nav-btn" onclick="showScreen('exam')">Mock Exam</button>
+  <button class="nav-btn" onclick="startMiniTest()">🎯 Mini-Test</button>
   <button class="nav-btn" onclick="showScreen('theory')">Theory</button>
   <button class="nav-btn" onclick="showScreen('stats')">Statistics</button>
 </div>
@@ -165,6 +166,11 @@
       <div class="mode-icon">⏱️</div>
       <h3>Mock Exam</h3>
       <p>60 questions, 60 minutes. Simulation of the real PRINCE2 Foundation exam.</p>
+    </div>
+    <div class="mode-card" onclick="startMiniTest()" style="grid-column: 1 / -1;">
+      <div class="mode-icon">🎯</div>
+      <h3>Mini-Test (10 pytań)</h3>
+      <p>10 losowych pytań z całej puli. Wynik na końcu: zdałeś jeśli ≥ 60% (6/10).</p>
     </div>
   </div>
 
@@ -250,6 +256,36 @@
     <h2>Answer Review</h2>
     <div id="review-list"></div>
     <button class="btn btn-secondary" onclick="resetExam()" style="margin-top:16px">Back</button>
+  </div>
+</div>
+
+<!-- MINI-TEST -->
+<div id="screen-minitest" class="screen">
+  <div id="minitest-running">
+    <div class="q-header">
+      <span class="q-category" id="mini-cat"></span>
+      <span class="q-number" id="mini-num"></span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="mini-progress"></div></div>
+    <div class="question-text" id="mini-question"></div>
+    <div class="options" id="mini-options"></div>
+    <div class="q-actions" style="margin-top:20px">
+      <button class="btn btn-primary" id="mini-next-btn" onclick="nextMiniQ()" style="display:none">Next →</button>
+      <button class="btn btn-secondary" onclick="showScreen('home')">Menu</button>
+    </div>
+  </div>
+  <div id="minitest-results" style="display:none">
+    <h2 style="text-align:center">Mini-Test — Wynik</h2>
+    <div class="result-circle" id="mini-result-circle">
+      <span id="mini-result-pct">0%</span>
+      <small id="mini-result-verdict">–</small>
+    </div>
+    <div style="text-align:center; margin-bottom:24px" id="mini-result-score"></div>
+    <div id="mini-review-list" style="margin-bottom:24px"></div>
+    <div class="q-actions" style="justify-content:center">
+      <button class="btn btn-primary" onclick="startMiniTest()">Jeszcze raz 🔁</button>
+      <button class="btn btn-secondary" onclick="showScreen('home')">Wróć do Home</button>
+    </div>
   </div>
 </div>
 
@@ -1344,6 +1380,10 @@ let state = {
   examTimer: null,
   examSeconds: 3600,
   examFinished: false,
+  miniQuestions: [],
+  miniIndex: 0,
+  miniAnswers: [],
+  miniAnswered: false,
   scores: JSON.parse(localStorage.getItem('p2_scores') || '{}'),
   examCount: parseInt(localStorage.getItem('p2_examCount') || '0')
 };
@@ -1696,14 +1736,135 @@ function resetStats() {
 }
 
 // ============================
+// MINI-TEST
+// ============================
+function startMiniTest() {
+  state.miniQuestions = shuffle([...QUESTIONS]).slice(0, 10);
+  state.miniIndex = 0;
+  state.miniAnswers = new Array(10).fill(null);
+  state.miniAnswered = false;
+  document.getElementById('minitest-running').style.display = 'block';
+  document.getElementById('minitest-results').style.display = 'none';
+  const nextBtn = document.getElementById('mini-next-btn');
+  nextBtn.textContent = 'Next →';
+  nextBtn.onclick = nextMiniQ;
+  showScreen('minitest');
+  renderMiniQ();
+}
+
+function renderMiniQ() {
+  const q = state.miniQuestions[state.miniIndex];
+  const total = state.miniQuestions.length;
+  document.getElementById('mini-cat').textContent = q.cat;
+  document.getElementById('mini-num').textContent = `Pytanie ${state.miniIndex + 1} / ${total}`;
+  document.getElementById('mini-progress').style.width = Math.round((state.miniIndex + 1) / total * 100) + '%';
+  document.getElementById('mini-question').textContent = q.q;
+  state.miniAnswered = false;
+  document.getElementById('mini-next-btn').style.display = 'none';
+  const letters = ['A', 'B', 'C', 'D'];
+  const opts = document.getElementById('mini-options');
+  opts.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const div = document.createElement('div');
+    div.className = 'option';
+    div.innerHTML = `<span class="option-letter">${letters[i]}</span><span>${opt}</span>`;
+    div.onclick = () => answerMini(i);
+    opts.appendChild(div);
+  });
+}
+
+function answerMini(chosen) {
+  if (state.miniAnswered) return;
+  state.miniAnswered = true;
+  state.miniAnswers[state.miniIndex] = chosen;
+  const q = state.miniQuestions[state.miniIndex];
+  const correctIdx = q.ans;
+  const allOpts = document.querySelectorAll('#mini-options .option');
+  allOpts.forEach((o, i) => {
+    const letterEl = o.querySelector('.option-letter');
+    o.classList.add('answered');
+    if (i === chosen && chosen === correctIdx) {
+      o.classList.add('correct');
+      if (letterEl) letterEl.textContent = '✓';
+    } else if (i === chosen && chosen !== correctIdx) {
+      o.classList.add('wrong');
+      if (letterEl) letterEl.textContent = '✗';
+    } else if (i === correctIdx && chosen !== correctIdx) {
+      o.classList.add('show-correct');
+      if (letterEl) letterEl.textContent = '✓';
+    } else {
+      o.classList.add('disabled');
+    }
+  });
+  const nextBtn = document.getElementById('mini-next-btn');
+  if (state.miniIndex < state.miniQuestions.length - 1) {
+    nextBtn.textContent = 'Next →';
+    nextBtn.onclick = nextMiniQ;
+  } else {
+    nextBtn.textContent = 'Zobacz wynik →';
+    nextBtn.onclick = finishMini;
+  }
+  nextBtn.style.display = 'inline-block';
+}
+
+function nextMiniQ() {
+  state.miniIndex++;
+  document.getElementById('mini-next-btn').textContent = 'Next →';
+  document.getElementById('mini-next-btn').onclick = nextMiniQ;
+  renderMiniQ();
+}
+
+function finishMini() {
+  const total = state.miniQuestions.length;
+  let correct = 0;
+  state.miniQuestions.forEach((q, i) => { if (state.miniAnswers[i] === q.ans) correct++; });
+  const pct = Math.round(correct / total * 100);
+  const passed = correct >= 6;
+  document.getElementById('minitest-running').style.display = 'none';
+  document.getElementById('minitest-results').style.display = 'block';
+  const circle = document.getElementById('mini-result-circle');
+  circle.className = 'result-circle ' + (passed ? 'pass' : 'fail');
+  document.getElementById('mini-result-pct').textContent = pct + '%';
+  document.getElementById('mini-result-verdict').textContent = passed ? 'PASS' : 'FAIL';
+  document.getElementById('mini-result-score').innerHTML =
+    `<strong style="font-size:1.5rem">${correct} / ${total} — ${pct}%</strong><br>` +
+    `<span style="font-size:1.15rem; font-weight:700; color:${passed ? '#059669' : '#dc2626'}">${passed ? '✅ ZDAŁEŚ' : '❌ NIE ZDAŁEŚ'}</span><br>` +
+    `<span style="font-size:0.85rem; color:#888">Próg zaliczenia: 60% (6/10)</span>`;
+  const reviewList = document.getElementById('mini-review-list');
+  reviewList.innerHTML = '';
+  const letters = ['A', 'B', 'C', 'D'];
+  state.miniQuestions.forEach((q, i) => {
+    const userAns = state.miniAnswers[i];
+    const isCorrect = userAns === q.ans;
+    const div = document.createElement('div');
+    div.style.cssText = `border:1px solid ${isCorrect ? '#059669' : '#dc2626'};border-radius:10px;padding:14px 16px;margin-bottom:12px;`;
+    div.innerHTML =
+      `<div style="font-size:0.75rem;margin-bottom:6px;">${i + 1}. ${q.cat} · ` +
+      (isCorrect
+        ? '<span style="color:#059669;font-weight:600">Poprawnie ✓</span>'
+        : '<span style="color:#dc2626;font-weight:600">Błędnie ✗</span>') +
+      `</div><div style="font-size:0.9rem;margin-bottom:10px;">${q.q}</div>` +
+      q.opts.map((o, j) => {
+        let bg = '';
+        let border = '';
+        if (j === q.ans) { bg = 'background:#d1fae5;'; border = 'border:1px solid #059669;'; }
+        else if (j === userAns && !isCorrect) { bg = 'background:#fee2e2;'; border = 'border:1px solid #dc2626;'; }
+        return `<div style="padding:5px 10px;border-radius:6px;font-size:0.85rem;margin:3px 0;${bg}${border}">${letters[j]}. ${o}${j === q.ans ? ' ✓' : ''}${j === userAns && !isCorrect ? ' ← Twoja odpowiedź' : ''}</div>`;
+      }).join('');
+    reviewList.appendChild(div);
+  });
+  window.scrollTo(0, 0);
+}
+
+// ============================
 // HELPERS
 // ============================
 function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('screen-'+name).classList.add('active');
-  const idx = ['home','study','exam','theory','stats'].indexOf(name);
-  document.querySelectorAll('.nav-btn')[idx].classList.add('active');
+  const idx = ['home','study','exam','minitest','theory','stats'].indexOf(name);
+  if(idx >= 0) document.querySelectorAll('.nav-btn')[idx].classList.add('active');
   if(name==='stats') renderStatsScreen();
   if(name==='theory' && !window.mermaidRendered) {
     window.mermaidRendered = true;
