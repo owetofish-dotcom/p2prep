@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>RnD TESTS</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --bg:      #07090f;
+    --bg2:     #0d1018;
+    --line:    rgba(255,255,255,0.07);
+    --text:    #e8eaf0;
+    --muted:   #5a6070;
+    --accent:  #4d8ef5;
+    --warn:    #f5a623;
+    --danger:  #e84040;
+    --green:   #3ec87a;
+    --mono:    'Share Tech Mono', monospace;
+    --sans:    'Inter', system-ui, sans-serif;
+    --r:       10px;
+    --ib:      rgba(255,255,255,0.05);
+    --il:      rgba(255,255,255,0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { min-height: 100%; background: #03040a; }
+
+  body {
+    font-family: var(--sans);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    background: radial-gradient(ellipse 700px 900px at 50% 35%, #0b1020 0%, #03040a 100%);
+  }
+
+  .wrapper {
+    max-width: 480px;
+    margin: 0 auto;
+    background: var(--bg);
+    min-height: 100vh;
+    position: relative;
+  }
+
+  @media (min-width: 500px) {
+    .wrapper {
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 40px 100px rgba(0,0,0,0.85);
+    }
+  }
+
+  /* ── SCREENS ─────────────────────────────── */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ── HEADER ──────────────────────────────── */
+  .hdr {
+    padding: 15px 16px 12px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 10;
+  }
+  .hdr-title { font-family: var(--mono); font-size: 1.35rem; letter-spacing: .1em; }
+  .hdr-btn {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-family: var(--sans);
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 6px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .hdr-btn:active { background: rgba(77,142,245,0.12); }
+  .hdr-btn.muted { color: var(--muted); font-size: 0.78rem; }
+
+  /* ── SPINNER ─────────────────────────────── */
+  .spinner-overlay {
+    position: fixed; inset: 0;
+    background: rgba(7,9,15,.75);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+  }
+  .spinner-overlay.on { display: flex; }
+  .spinner {
+    width: 38px; height: 38px;
+    border: 3px solid rgba(77,142,245,.2);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── ERROR BOX ───────────────────────────── */
+  .err {
+    background: rgba(232,64,64,.1);
+    border: 1px solid rgba(232,64,64,.3);
+    border-radius: var(--r);
+    padding: 12px 14px;
+    color: var(--danger);
+    font-size: 0.87rem;
+    display: none;
+  }
+  .err.on { display: block; }
+
+  /* ── BUTTONS ─────────────────────────────── */
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--r);
+    padding: 16px 20px;
+    font-family: var(--sans);
+    font-size: 0.98rem;
+    font-weight: 700;
+    letter-spacing: .05em;
+    cursor: pointer;
+    width: 100%;
+    -webkit-tap-highlight-color: transparent;
+    transition: opacity .15s;
+  }
+  .btn-primary:active { opacity: .78; }
+  .btn-primary:disabled { opacity: .35; cursor: not-allowed; }
+
+  .btn-new {
+    background: linear-gradient(135deg, #2a5fd6 0%, #4d8ef5 100%);
+    color: #fff;
+    border: none;
+    border-radius: var(--r);
+    padding: 18px 20px;
+    font-family: var(--sans);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    cursor: pointer;
+    width: 100%;
+    box-shadow: 0 4px 20px rgba(77,142,245,.28);
+    -webkit-tap-highlight-color: transparent;
+    transition: opacity .15s;
+  }
+  .btn-new:active { opacity: .82; }
+
+  .btn-ghost {
+    background: rgba(255,255,255,.05);
+    color: var(--text);
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    padding: 11px 14px;
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background .12s;
+  }
+  .btn-ghost:active { background: rgba(255,255,255,.1); }
+
+  /* ── SETUP SCREEN ────────────────────────── */
+  .setup-wrap {
+    padding: 52px 24px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+  .setup-logo {
+    font-family: var(--mono);
+    font-size: 2rem;
+    letter-spacing: .14em;
+    color: var(--accent);
+    text-align: center;
+  }
+  .setup-sub {
+    font-size: 0.84rem;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.65;
+  }
+
+  /* ── FORM INPUTS ─────────────────────────── */
+  .f-label {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    margin-bottom: 7px;
+  }
+  .f-input {
+    background: var(--ib);
+    border: 1px solid var(--il);
+    border-radius: var(--r);
+    padding: 13px 14px;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 1rem;
+    width: 100%;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .f-input:focus { border-color: var(--accent); }
+  .f-input::placeholder { color: var(--muted); opacity: 1; }
+  .f-input[type=number] { -moz-appearance: textfield; }
+  .f-input[type=number]::-webkit-inner-spin-button,
+  .f-input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+  textarea.f-input { resize: none; min-height: 88px; line-height: 1.55; }
+  select.f-input { background-image: none; cursor: pointer; }
+  input[type=password].f-input { font-family: var(--mono); font-size: 0.9rem; letter-spacing: .04em; }
+
+  .f-group { margin-bottom: 16px; }
+  .f-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* ── SEGMENTED ───────────────────────────── */
+  .seg {
+    display: flex;
+    background: rgba(255,255,255,.04);
+    border: 1px solid var(--il);
+    border-radius: var(--r);
+    overflow: hidden;
+  }
+  .seg-btn {
+    flex: 1;
+    padding: 11px 4px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background .13s, color .13s;
+    white-space: nowrap;
+  }
+  .seg-btn + .seg-btn { border-left: 1px solid var(--il); }
+  .seg-btn.active           { background: rgba(77,142,245,.2);  color: var(--accent); font-weight: 600; }
+  .seg-btn.active.s-lekki   { background: rgba(62,200,122,.15); color: var(--green); }
+  .seg-btn.active.s-sredni  { background: rgba(245,166,35,.15); color: var(--warn); }
+  .seg-btn.active.s-silny   { background: rgba(232,64,64,.15);  color: var(--danger); }
+  .seg-btn.active.s-red     { background: rgba(245,101,101,.2); color: #f56565; }
+  .seg-btn.active.s-green   { background: rgba(62,200,122,.2);  color: var(--green); }
+  .seg-btn.active.s-black   { background: rgba(160,160,160,.12);color: #ccc; }
+
+  /* ── ACCORDION ───────────────────────────── */
+  .acc {
+    background: rgba(255,255,255,.02);
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  .acc-hdr {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .acc-title { font-size: 0.9rem; font-weight: 600; }
+  .acc-arrow { color: var(--muted); font-size: 0.65rem; transition: transform .2s; }
+  .acc.open .acc-arrow { transform: rotate(180deg); }
+  .acc-body {
+    display: none;
+    padding: 4px 16px 16px;
+    border-top: 1px solid var(--line);
+  }
+  .acc.open .acc-body { display: block; }
+  .acc-body .f-group:first-child { margin-top: 14px; }
+
+  /* ── LIST SCREEN ─────────────────────────── */
+  .list-pad { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+
+  .empty {
+    text-align: center;
+    color: var(--muted);
+    padding: 56px 24px;
+    font-size: 0.92rem;
+    line-height: 1.75;
+  }
+
+  /* ── TEST CARD ───────────────────────────── */
+  .card {
+    background: rgba(255,255,255,.03);
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    overflow: hidden;
+  }
+  .card-top { display: flex; gap: 12px; padding: 14px; align-items: flex-start; }
+  .card-img {
+    width: 58px; height: 58px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .card-no-img {
+    width: 58px; height: 58px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    background: rgba(255,255,255,.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    opacity: .3;
+  }
+  .card-info { flex: 1; min-width: 0; }
+  .card-date { font-family: var(--mono); font-size: 0.73rem; color: var(--muted); margin-bottom: 7px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 5px; }
+  .chip {
+    font-size: 0.7rem;
+    font-family: var(--mono);
+    padding: 3px 7px;
+    border-radius: 20px;
+    border: 1px solid;
+  }
+  .chip-dist  { color: var(--green);  border-color: rgba(62,200,122,.4); background: rgba(62,200,122,.1);  font-weight: 700; font-size: 0.75rem; }
+  .chip-temp  { color: var(--warn);   border-color: rgba(245,166,35,.35); background: rgba(245,166,35,.08); }
+  .chip-red   { color: #f56565;       border-color: rgba(245,101,101,.3); background: rgba(245,101,101,.08); }
+  .chip-green { color: var(--green);  border-color: rgba(62,200,122,.3); background: rgba(62,200,122,.08); }
+  .chip-dark  { color: #bbb;          border-color: rgba(180,180,180,.25); background: rgba(180,180,180,.06); }
+  .chip-wind  { color: var(--accent); border-color: rgba(77,142,245,.3); background: rgba(77,142,245,.08); }
+
+  .card-actions { display: flex; border-top: 1px solid var(--line); }
+  .card-act {
+    flex: 1;
+    padding: 11px;
+    background: none;
+    border: none;
+    font-family: var(--sans);
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background .12s;
+  }
+  .card-act:active { background: rgba(255,255,255,.04); }
+  .card-act:first-child { border-right: 1px solid var(--line); color: var(--accent); }
+  .card-act:last-child  { color: var(--danger); }
+
+  /* ── FORM SCREEN ─────────────────────────── */
+  .form-body { padding: 16px 16px 110px; }
+  .sec-title {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    padding: 6px 0 12px;
+  }
+  .sec-title:not(:first-child) { margin-top: 4px; }
+
+  /* ── WEIGHT GROUPS ───────────────────────── */
+  .wg-list { display: flex; flex-direction: column; gap: 10px; }
+  .wg {
+    background: rgba(255,255,255,.03);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 12px 12px 10px;
+    position: relative;
+  }
+  .wg-rm {
+    position: absolute; top: 8px; right: 8px;
+    background: none; border: none;
+    color: var(--danger); font-size: 0.95rem;
+    cursor: pointer; padding: 2px 7px; border-radius: 4px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .wg-rm:active { background: rgba(232,64,64,.1); }
+  .wg-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .wg-central { display: flex; align-items: center; gap: 9px; margin-top: 10px; font-size: 0.85rem; color: var(--muted); }
+  .wg-central input[type=checkbox] { width: 17px; height: 17px; accent-color: var(--accent); cursor: pointer; }
+
+  /* ── PHOTOS ──────────────────────────────── */
+  .photo-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 10px; }
+  .photo-cell { position: relative; aspect-ratio: 1; }
+  .photo-cell img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; display: block; }
+  .photo-del {
+    position: absolute; top: 4px; right: 4px;
+    width: 22px; height: 22px;
+    background: rgba(0,0,0,.72); border: none; border-radius: 50%;
+    color: #fff; font-size: 0.7rem;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  .photo-btns { display: flex; gap: 8px; }
+  .photo-btns .btn-ghost { flex: 1; text-align: center; padding: 13px 8px; font-size: 0.82rem; }
+
+  /* ── SAVE BAR ────────────────────────────── */
+  .save-bar {
+    position: fixed; bottom: 0;
+    left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 480px;
+    padding: 12px 16px;
+    background: var(--bg);
+    border-top: 1px solid var(--line);
+    z-index: 20;
+  }
+
+  /* ── PLUG RADIOS ─────────────────────────── */
+  .plug-list { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+  .plug-opt {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 0.9rem; color: var(--text); cursor: pointer;
+  }
+  .plug-opt input[type=radio] { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- SPINNER -->
+  <div class="spinner-overlay" id="spinner"><div class="spinner"></div></div>
+
+  <!-- ═══════════════════ SETUP ═══════════════════ -->
+  <div class="screen active" id="s-setup">
+    <div class="setup-wrap">
+      <div class="setup-logo">RnD TESTS</div>
+      <div class="setup-sub">Podaj GitHub Personal Access Token (scope: gist) aby połączyć bazę danych.</div>
+      <div class="f-group">
+        <label class="f-label">GitHub PAT</label>
+        <input type="password" class="f-input" id="setup-tok" placeholder="ghp_..." autocomplete="off" spellcheck="false">
+      </div>
+      <div class="err" id="setup-err"></div>
+      <button class="btn-primary" id="btn-connect">POŁĄCZ</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ LIST ════════════════════ -->
+  <div class="screen" id="s-list">
+    <div class="hdr">
+      <span class="hdr-title">RnD TESTS</span>
+      <button class="hdr-btn muted" id="btn-logout">wyloguj</button>
+    </div>
+    <div class="list-pad">
+      <button class="btn-new" id="btn-new">+ NOWY TEST</button>
+      <div id="cards"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ FORM ════════════════════ -->
+  <div class="screen" id="s-form">
+    <div class="hdr">
+      <button class="hdr-btn" id="btn-back">← Lista</button>
+      <span class="hdr-title" id="form-hdr-title">NOWY TEST</span>
+    </div>
+    <div class="form-body" id="form-body">
+
+      <!-- WARUNKI -->
+      <div class="sec-title">Warunki</div>
+      <div class="f-row">
+        <div class="f-group">
+          <label class="f-label">Data</label>
+          <input type="date" class="f-input" id="f-date">
+        </div>
+        <div class="f-group">
+          <label class="f-label">Czas</label>
+          <input type="time" class="f-input" id="f-time">
+        </div>
+      </div>
+      <div class="f-row">
+        <div class="f-group">
+          <label class="f-label">Temperatura °C</label>
+          <input type="number" class="f-input" id="f-temp" placeholder="20">
+        </div>
+        <div class="f-group">
+          <label class="f-label">Ciśnienie bar</label>
+          <input type="number" class="f-input" id="f-pres" placeholder="—" step="0.1">
+        </div>
+      </div>
+      <div class="f-group">
+        <label class="f-label">Wiatr</label>
+        <div class="seg" id="seg-wind">
+          <button class="seg-btn active" data-val="zero">zero</button>
+          <button class="seg-btn s-lekki" data-val="lekki">lekki</button>
+          <button class="seg-btn s-sredni" data-val="sredni">sredni</button>
+          <button class="seg-btn s-silny" data-val="silny">silny</button>
+        </div>
+      </div>
+      <div class="f-group">
+        <label class="f-label">Gaz</label>
+        <div class="seg" id="seg-gas">
+          <button class="seg-btn s-red active" data-val="czerwony">czerwony</button>
+          <button class="seg-btn s-green" data-val="green">green</button>
+          <button class="seg-btn s-black" data-val="black">black</button>
+        </div>
+      </div>
+
+      <!-- WYNIKI -->
+      <div class="sec-title">Wyniki</div>
+      <div class="f-row">
+        <div class="f-group">
+          <label class="f-label">Donośność m</label>
+          <input type="number" class="f-input" id="f-range" placeholder="0">
+        </div>
+        <div class="f-group">
+          <label class="f-label">Rozkład linek</label>
+          <select class="f-input" id="f-lines-layout">
+            <option value="">—</option>
+            <option value="równo">równo</option>
+            <option value="nierówno">nierówno</option>
+            <option value="splątane">splątane</option>
+          </select>
+        </div>
+      </div>
+      <div class="f-group">
+        <label class="f-label">Obserwacje</label>
+        <textarea class="f-input" id="f-obs" placeholder="Obserwacje z testu..."></textarea>
+      </div>
+      <div class="f-group">
+        <label class="f-label">Notatki / pomysły</label>
+        <textarea class="f-input" id="f-notes" placeholder="Notatki, pomysły na kolejne testy..." style="min-height:110px;"></textarea>
+      </div>
+
+      <!-- ACCORDION: Konfiguracja kartridża -->
+      <div class="acc" id="acc-cart">
+        <div class="acc-hdr" onclick="toggleAcc('acc-cart')">
+          <span class="acc-title">Konfiguracja kartridza</span>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="acc-body">
+          <div class="f-row">
+            <div class="f-group">
+              <label class="f-label">Liczba luf</label>
+              <input type="number" class="f-input" id="f-barrels" placeholder="1">
+            </div>
+            <div class="f-group">
+              <label class="f-label">Srednica fi mm</label>
+              <input type="number" class="f-input" id="f-diam" placeholder="12" step="0.1">
+            </div>
+          </div>
+          <div class="f-row">
+            <div class="f-group">
+              <label class="f-label">Dlugosc mm</label>
+              <input type="number" class="f-input" id="f-len" placeholder="150">
+            </div>
+            <div class="f-group">
+              <label class="f-label">Kat &deg;</label>
+              <input type="number" class="f-input" id="f-angle" placeholder="45">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACCORDION: Ciężarki -->
+      <div class="acc" id="acc-wgt">
+        <div class="acc-hdr" onclick="toggleAcc('acc-wgt')">
+          <span class="acc-title">Ciezarki</span>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="acc-body">
+          <div class="wg-list" id="wg-list"></div>
+          <button class="btn-ghost" style="width:100%;margin-top:10px;" onclick="addWG()">+ Dodaj grupe</button>
+        </div>
+      </div>
+
+      <!-- ACCORDION: Zaślepka -->
+      <div class="acc" id="acc-plug">
+        <div class="acc-hdr" onclick="toggleAcc('acc-plug')">
+          <span class="acc-title">Zaslepka</span>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="acc-body">
+          <div class="plug-list" id="plug-list"></div>
+        </div>
+      </div>
+
+      <!-- ACCORDION: Linki -->
+      <div class="acc" id="acc-lnk">
+        <div class="acc-hdr" onclick="toggleAcc('acc-lnk')">
+          <span class="acc-title">Linki</span>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="acc-body">
+          <div class="f-row">
+            <div class="f-group">
+              <label class="f-label">Dlugosc m</label>
+              <input type="number" class="f-input" id="f-llen" placeholder="5" step="0.1">
+            </div>
+            <div class="f-group">
+              <label class="f-label">Kolor</label>
+              <input type="text" class="f-input" id="f-lcol" placeholder="np. zolty">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ZDJECIA -->
+      <div class="sec-title">Zdjecia</div>
+      <div class="photo-grid" id="photo-grid"></div>
+      <div class="photo-btns">
+        <button class="btn-ghost" onclick="trigCam()">Zrob zdjecie</button>
+        <button class="btn-ghost" onclick="trigLib()">Z biblioteki</button>
+      </div>
+      <input type="file" id="inp-cam" accept="image/*" capture="environment" multiple style="display:none;">
+      <input type="file" id="inp-lib" accept="image/*" multiple style="display:none;">
+
+    </div><!-- /form-body -->
+
+    <div class="save-bar">
+      <button class="btn-primary" id="btn-save">ZAPISZ TEST</button>
+    </div>
+  </div><!-- /s-form -->
+
+</div><!-- /wrapper -->
+
+<script>
+// ────────────────────────────────────────────────
+// CONSTANTS & STATE
+// ────────────────────────────────────────────────
+const GH = 'https://api.github.com';
+const FNAME = 'tests.json';
+const PLUGS = ['brak','plastik','chusteczka','wciskana','gruba'];
+
+let token  = localStorage.getItem('gist_token') || '';
+let gistId = localStorage.getItem('gist_id')    || '';
+let tests  = [];
+let editId = null;
+let photos = [];
+let windVal = 'zero';
+let gasVal  = 'czerwony';
+let wgData  = [];   // weight groups
+let wgCtr   = 0;    // id counter
+
+// ────────────────────────────────────────────────
+// UI HELPERS
+// ────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const qs = sel => document.querySelector(sel);
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+  if (id === 's-form') $('form-body').scrollTop = 0;
+}
+
+function spin(on) { $('spinner').classList.toggle('on', on); }
+
+function showErr(id, msg) {
+  const el = $(id);
+  el.textContent = msg;
+  el.classList.toggle('on', !!msg);
+}
+
+function pad2(n) { return String(n).padStart(2,'0'); }
+function todayStr() { return new Date().toISOString().slice(0,10); }
+function nowTimeStr() {
+  const d = new Date();
+  return pad2(d.getHours()) + ':' + pad2(d.getMinutes());
+}
+
+// ────────────────────────────────────────────────
+// GITHUB GIST API
+// ────────────────────────────────────────────────
+async function ghFetch(method, path, body) {
+  const res = await fetch(GH + path, {
+    method,
+    headers: {
+      'Authorization': 'token ' + token,
+      'Content-Type': 'application/json',
+      'Accept': 'application/vnd.github+json'
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  if (!res.ok) {
+    let msg = 'HTTP ' + res.status;
+    try { const j = await res.json(); msg += ': ' + (j.message || ''); } catch(_) {}
+    throw new Error(msg);
+  }
+  return res.json();
+}
+
+async function loadTests() {
+  spin(true);
+  try {
+    const gist = await ghFetch('GET', '/gists/' + gistId);
+    const raw = gist.files[FNAME]?.content || '[]';
+    tests = JSON.parse(raw);
+    tests.sort((a,b) => ((b.date||'') + (b.time||'')).localeCompare((a.date||'') + (a.time||'')));
+  } catch(e) {
+    alert('Blad wczytywania: ' + e.message);
+  } finally {
+    spin(false);
+  }
+}
+
+async function persistTests() {
+  spin(true);
+  try {
+    await ghFetch('PATCH', '/gists/' + gistId, {
+      files: { [FNAME]: { content: JSON.stringify(tests, null, 2) } }
+    });
+  } catch(e) {
+    alert('Blad zapisu: ' + e.message);
+    spin(false);
+    throw e;
+  }
+  spin(false);
+}
+
+// ────────────────────────────────────────────────
+// SETUP
+// ────────────────────────────────────────────────
+$('btn-connect').addEventListener('click', async () => {
+  const t = $('setup-tok').value.trim();
+  if (!t) return showErr('setup-err', 'Wpisz token.');
+  token = t;
+  spin(true);
+  showErr('setup-err', '');
+  try {
+    await ghFetch('GET', '/gists');
+    const gist = await ghFetch('POST', '/gists', {
+      description: 'rnd-tests-data',
+      public: false,
+      files: { [FNAME]: { content: '[]' } }
+    });
+    gistId = gist.id;
+    localStorage.setItem('gist_token', token);
+    localStorage.setItem('gist_id', gistId);
+    tests = [];
+    renderList();
+    showScreen('s-list');
+  } catch(e) {
+    showErr('setup-err', 'Blad: ' + e.message);
+  } finally {
+    spin(false);
+  }
+});
+
+// ────────────────────────────────────────────────
+// LOGOUT
+// ────────────────────────────────────────────────
+$('btn-logout').addEventListener('click', () => {
+  if (!confirm('Wylogowac? Token zostanie usuniety z przegladarki.')) return;
+  localStorage.removeItem('gist_token');
+  localStorage.removeItem('gist_id');
+  token = ''; gistId = '';
+  showScreen('s-setup');
+});
+
+// ────────────────────────────────────────────────
+// LIST RENDER
+// ────────────────────────────────────────────────
+function renderList() {
+  const el = $('cards');
+  if (!tests.length) {
+    el.innerHTML = '<div class="empty">Brak testow.<br>Kliknij "+ NOWY TEST" zeby dodac pierwszy.</div>';
+    return;
+  }
+  el.innerHTML = tests.map(cardHTML).join('');
+}
+
+function gasChipClass(g) {
+  if (g === 'czerwony') return 'chip-red';
+  if (g === 'green')    return 'chip-green';
+  return 'chip-dark';
+}
+
+function cardHTML(t) {
+  const thumb = (t.photos && t.photos.length)
+    ? `<img class="card-img" src="${t.photos[0]}" alt="">`
+    : `<div class="card-no-img">&#x1F9EA;</div>`;
+  const dc = gasChipClass(t.gas);
+  const chips = [
+    t.range  ? `<span class="chip chip-dist">${t.range}&nbsp;m</span>` : '',
+    (t.temp !== '' && t.temp != null) ? `<span class="chip chip-temp">${t.temp}&deg;C</span>` : '',
+    t.gas    ? `<span class="chip ${dc}">${t.gas}</span>` : '',
+    (t.wind && t.wind !== 'zero') ? `<span class="chip chip-wind">${t.wind}</span>` : ''
+  ].filter(Boolean).join('');
+  const ds = (t.date || '') + (t.time ? ' &nbsp;' + t.time : '');
+  return `
+    <div class="card" style="margin-bottom:0">
+      <div class="card-top">
+        ${thumb}
+        <div class="card-info">
+          <div class="card-date">${ds}</div>
+          <div class="chips">${chips || '<span style="color:var(--muted);font-size:0.78rem;">brak danych</span>'}</div>
+        </div>
+      </div>
+      <div class="card-actions">
+        <button class="card-act" onclick="openForm('${t.id}')">&#9998; Edytuj</button>
+        <button class="card-act" onclick="delTest('${t.id}')">&#10005; Usun</button>
+      </div>
+    </div>`;
+}
+
+$('btn-new').addEventListener('click', () => openForm(null));
+
+// ────────────────────────────────────────────────
+// DELETE
+// ────────────────────────────────────────────────
+async function delTest(id) {
+  if (!confirm('Usunac ten test? Operacja nieodwracalna.')) return;
+  tests = tests.filter(t => t.id !== id);
+  await persistTests();
+  renderList();
+}
+
+// ────────────────────────────────────────────────
+// ACCORDION
+// ────────────────────────────────────────────────
+function toggleAcc(id) { $(id).classList.toggle('open'); }
+function openAcc(id)   { $(id).classList.add('open'); }
+
+// ────────────────────────────────────────────────
+// SEGMENTED
+// ────────────────────────────────────────────────
+function initSeg(cid, setter) {
+  $(cid).querySelectorAll('.seg-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      $(cid).querySelectorAll('.seg-btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      setter(b.dataset.val);
+    });
+  });
+}
+
+function setSeg(cid, val) {
+  $(cid).querySelectorAll('.seg-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.val === val);
+  });
+}
+
+initSeg('seg-wind', v => windVal = v);
+initSeg('seg-gas',  v => gasVal  = v);
+
+// ────────────────────────────────────────────────
+// WEIGHT GROUPS
+// ────────────────────────────────────────────────
+function addWG(data) {
+  const id = ++wgCtr;
+  wgData.push(data ? { ...data, _i: id } : { _i: id, qty: '', mass: '', mat: 'TPU', central: false });
+  renderWGs();
+}
+
+function rmWG(i) {
+  wgData.splice(i, 1);
+  renderWGs();
+}
+
+function setWGMat(i, mat) {
+  wgData[i].mat = mat;
+  renderWGs();
+}
+
+function renderWGs() {
+  $('wg-list').innerHTML = wgData.map((g, i) => `
+    <div class="wg">
+      <button class="wg-rm" onclick="rmWG(${i})">&#10005;</button>
+      <div class="wg-row">
+        <div>
+          <label class="f-label">Ilosc</label>
+          <input type="number" class="f-input" value="${g.qty}"
+            oninput="wgData[${i}].qty=this.value" placeholder="1">
+        </div>
+        <div>
+          <label class="f-label">Masa g</label>
+          <input type="number" class="f-input" value="${g.mass}"
+            oninput="wgData[${i}].mass=this.value" placeholder="5" step="0.1">
+        </div>
+      </div>
+      <div class="f-group" style="margin-bottom:0;">
+        <label class="f-label">Material</label>
+        <div class="seg">
+          <button class="seg-btn ${g.mat==='TPU'?'active':''}" onclick="setWGMat(${i},'TPU')">TPU</button>
+          <button class="seg-btn ${g.mat==='metal'?'active':''}" onclick="setWGMat(${i},'metal')">metal</button>
+          <button class="seg-btn ${g.mat==='inny'?'active':''}" onclick="setWGMat(${i},'inny')">inny</button>
+        </div>
+      </div>
+      <div class="wg-central">
+        <input type="checkbox" id="wgc-${i}" ${g.central?'checked':''}
+          onchange="wgData[${i}].central=this.checked">
+        <label for="wgc-${i}">centralny</label>
+      </div>
+    </div>`).join('');
+}
+
+// ────────────────────────────────────────────────
+// PLUG RADIOS
+// ────────────────────────────────────────────────
+function renderPlugs(sel) {
+  $('plug-list').innerHTML = PLUGS.map(p => `
+    <label class="plug-opt">
+      <input type="radio" name="plug-r" value="${p}" ${p===(sel||'brak')?'checked':''}>
+      ${p}
+    </label>`).join('');
+}
+
+function getPlug() {
+  const el = qs('input[name="plug-r"]:checked');
+  return el ? el.value : 'brak';
+}
+
+// ────────────────────────────────────────────────
+// PHOTOS
+// ────────────────────────────────────────────────
+function trigCam() { $('inp-cam').click(); }
+function trigLib() { $('inp-lib').click(); }
+
+function handleFiles(files) {
+  Array.from(files).forEach(f => {
+    const r = new FileReader();
+    r.onload = e => { photos.push(e.target.result); renderPhotos(); };
+    r.readAsDataURL(f);
+  });
+}
+
+function rmPhoto(i) { photos.splice(i,1); renderPhotos(); }
+
+function renderPhotos() {
+  $('photo-grid').innerHTML = photos.map((src,i) => `
+    <div class="photo-cell">
+      <img src="${src}" alt="">
+      <button class="photo-del" onclick="rmPhoto(${i})">&#10005;</button>
+    </div>`).join('');
+}
+
+$('inp-cam').addEventListener('change', e => { handleFiles(e.target.files); e.target.value=''; });
+$('inp-lib').addEventListener('change', e => { handleFiles(e.target.files); e.target.value=''; });
+
+// ────────────────────────────────────────────────
+// FORM OPEN
+// ────────────────────────────────────────────────
+function openForm(id) {
+  editId = id;
+  photos = [];
+  wgData = [];
+  wgCtr  = 0;
+
+  $('form-hdr-title').textContent = id ? 'EDYCJA' : 'NOWY TEST';
+
+  // close all accordions
+  document.querySelectorAll('.acc').forEach(a => a.classList.remove('open'));
+
+  const t = id ? tests.find(x => x.id === id) : null;
+
+  $('f-date').value      = t?.date       || todayStr();
+  $('f-time').value      = t?.time       || nowTimeStr();
+  $('f-temp').value      = t?.temp       ?? '';
+  $('f-pres').value      = t?.pressure   ?? '';
+  $('f-range').value     = t?.range      ?? '';
+  $('f-lines-layout').value = t?.linesLayout || '';
+  $('f-obs').value       = t?.observations || '';
+  $('f-notes').value     = t?.notes      || '';
+  $('f-barrels').value   = t?.barrels    ?? '';
+  $('f-diam').value      = t?.diameter   ?? '';
+  $('f-len').value       = t?.length     ?? '';
+  $('f-angle').value     = t?.angle      ?? '';
+  $('f-llen').value      = t?.lineLength ?? '';
+  $('f-lcol').value      = t?.lineColor  || '';
+
+  windVal = t?.wind || 'zero';
+  gasVal  = t?.gas  || 'czerwony';
+  setSeg('seg-wind', windVal);
+  setSeg('seg-gas',  gasVal);
+
+  renderPlugs(t?.plug);
+
+  if (t?.weights?.length) {
+    t.weights.forEach(w => addWG(w));
+  } else {
+    renderWGs();
+  }
+
+  photos = t?.photos ? [...t.photos] : [];
+  renderPhotos();
+
+  // auto-open accordions that have data
+  if (t) {
+    if (t.barrels || t.diameter || t.length || t.angle) openAcc('acc-cart');
+    if (t.weights?.length) openAcc('acc-wgt');
+    if (t.plug && t.plug !== 'brak') openAcc('acc-plug');
+    if (t.lineLength || t.lineColor) openAcc('acc-lnk');
+  }
+
+  showScreen('s-form');
+}
+
+// ────────────────────────────────────────────────
+// FORM SAVE
+// ────────────────────────────────────────────────
+$('btn-save').addEventListener('click', async () => {
+  const test = {
+    id:          editId || crypto.randomUUID(),
+    date:        $('f-date').value,
+    time:        $('f-time').value,
+    temp:        $('f-temp').value,
+    pressure:    $('f-pres').value,
+    wind:        windVal,
+    gas:         gasVal,
+    range:       $('f-range').value,
+    linesLayout: $('f-lines-layout').value,
+    observations:$('f-obs').value,
+    notes:       $('f-notes').value,
+    barrels:     $('f-barrels').value,
+    diameter:    $('f-diam').value,
+    length:      $('f-len').value,
+    angle:       $('f-angle').value,
+    plug:        getPlug(),
+    lineLength:  $('f-llen').value,
+    lineColor:   $('f-lcol').value,
+    weights:     wgData.map(g => ({ qty: g.qty, mass: g.mass, mat: g.mat, central: g.central })),
+    photos:      [...photos],
+    updatedAt:   new Date().toISOString()
+  };
+
+  if (editId) {
+    const idx = tests.findIndex(x => x.id === editId);
+    if (idx >= 0) tests[idx] = test; else tests.unshift(test);
+  } else {
+    tests.unshift(test);
+  }
+
+  try {
+    await persistTests();
+    tests.sort((a,b) => ((b.date||'') + (b.time||'')).localeCompare((a.date||'') + (a.time||'')));
+    renderList();
+    showScreen('s-list');
+  } catch(_) { /* alert already shown */ }
+});
+
+$('btn-back').addEventListener('click', () => showScreen('s-list'));
+
+// ────────────────────────────────────────────────
+// INIT
+// ────────────────────────────────────────────────
+async function init() {
+  if (token && gistId) {
+    await loadTests();
+    renderList();
+    showScreen('s-list');
+  }
+  // else stays on setup screen (already active)
+}
+
+init();
+</script>
+</body>
+</html>
