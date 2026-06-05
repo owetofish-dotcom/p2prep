@@ -158,7 +158,7 @@
   .acc.open .acc-arrow { transform: rotate(180deg); }
   .acc-body { display: none; border-top: 1px solid var(--border); padding: 4px 14px 14px; }
   .acc.open .acc-body { display: block; }
-  .acc-body .f-group:first-child { margin-top: 12px; }
+  .acc-body > *:first-child { margin-top: 12px; }
 
   /* WEIGHT GROUPS */
   .wg-list { display: flex; flex-direction: column; gap: 8px; }
@@ -360,7 +360,7 @@
           <span class="acc-arrow">&#9660;</span>
         </div>
         <div class="acc-body">
-          <div class="wg-list" id="wg-list" style="margin-top:12px;"></div>
+          <div class="wg-list" id="wg-list"></div>
           <button class="btn-ghost" style="width:100%;margin-top:8px;text-align:center;" onclick="addWG()">+ Dodaj grup&#281;</button>
         </div>
       </div>
