@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>RnD TESTS</title>
+<title>RnD Tests</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -184,6 +184,37 @@
   .plug-list { display: flex; flex-direction: column; gap: 9px; margin-top: 4px; }
   .plug-opt { display: flex; align-items: center; gap: 9px; font-size: 0.88rem; color: var(--text); cursor: pointer; }
   .plug-opt input[type=radio] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--accent); }
+
+  /* VIEW SCREEN */
+  .view-body { padding: 14px 14px 40px; }
+  .view-sec { margin-bottom: 20px; }
+  .view-sec-title { font-size: 0.68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .09em; padding-bottom: 8px; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
+  .view-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .view-label { font-size: 0.68rem; color: var(--muted); font-weight: 500; margin-bottom: 3px; }
+  .view-val { font-size: 0.92rem; color: var(--text); font-weight: 500; }
+  .view-val.muted { color: var(--muted); font-weight: 400; }
+  .view-wg-item { background: var(--hover); border: 1px solid var(--border); border-radius: 7px; padding: 10px 12px; margin-bottom: 7px; }
+  .view-wg-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 0.88rem; }
+  .view-wg-badge { font-size: 0.7rem; font-weight: 500; padding: 2px 7px; border-radius: 20px; border: 1px solid var(--border); color: var(--text); background: var(--card); }
+  .view-photo-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; }
+  .view-photo-cell img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 7px; display: block; cursor: pointer; transition: opacity .12s; }
+  .view-photo-cell img:active { opacity: .75; }
+
+  /* LIGHTBOX */
+  .lightbox { position: fixed; inset: 0; background: rgba(0,0,0,.9); z-index: 300; display: flex; align-items: center; justify-content: center; }
+  .lightbox.hidden { display: none; }
+  .lightbox-img { max-width: 95vw; max-height: 90vh; border-radius: 6px; object-fit: contain; }
+  .lightbox-close { position: absolute; top: 14px; right: 16px; background: rgba(255,255,255,.15); border: none; color: #fff; font-size: 1.4rem; cursor: pointer; padding: 4px 10px; border-radius: 6px; line-height: 1.4; -webkit-tap-highlight-color: transparent; }
+
+  /* VIEW header action buttons */
+  .hdr-act { background: none; border: none; font-family: var(--font); font-size: 0.78rem; font-weight: 500; cursor: pointer; padding: 4px 8px; border-radius: 6px; -webkit-tap-highlight-color: transparent; }
+  .hdr-act.edit { color: var(--blue); }
+  .hdr-act.del  { color: var(--danger); }
+  .hdr-act:active { background: var(--hover); }
+
+  /* Clickable card top */
+  .card-top { cursor: pointer; }
+  .card-top:active { background: var(--hover); }
 </style>
 </head>
 <body>
@@ -194,7 +225,7 @@
   <!-- SETTINGS POPUP -->
   <div class="overlay hidden" id="settings-overlay">
     <div class="dialog">
-      <div class="dialog-title">Synchronizacja RnD TESTS</div>
+      <div class="dialog-title">Synchronizacja RnD Tests</div>
       <div class="dlg-field">
         <label class="dlg-label">GitHub Personal Access Token (zakres: gist)</label>
         <input type="password" class="dlg-input" id="dlg-token" placeholder="github_pat_..." autocomplete="off">
@@ -225,7 +256,7 @@
   <!-- LIST -->
   <div class="screen active" id="s-list">
     <div class="hdr">
-      <span class="hdr-title">RnD TESTS</span>
+      <span class="hdr-title">RnD Tests</span>
       <div class="hdr-right">
         <span class="sync-status" id="sync-status"></span>
         <button class="icon-btn" id="btn-settings" title="Ustawienia sync">
@@ -240,6 +271,25 @@
       <button class="btn-new" id="btn-new">+ NOWY TEST</button>
       <div id="cards"></div>
     </div>
+  </div>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox hidden" id="lightbox">
+    <button class="lightbox-close" id="lb-close">&#10005;</button>
+    <img class="lightbox-img" id="lb-img" src="" alt="">
+  </div>
+
+  <!-- VIEW -->
+  <div class="screen" id="s-view">
+    <div class="hdr">
+      <button class="hdr-back" id="btn-view-close">&#8592; Zamknij</button>
+      <span class="hdr-title" id="view-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px;"></span>
+      <div class="hdr-right">
+        <button class="hdr-act edit" id="btn-view-edit">&#9998; Edytuj</button>
+        <button class="hdr-act del"  id="btn-view-del">&#10005; Usu&#324;</button>
+      </div>
+    </div>
+    <div class="view-body" id="view-body"></div>
   </div>
 
   <!-- FORM -->
@@ -560,7 +610,7 @@ function cardHTML(t) {
   const ds = (t.date||'') + (t.time ? '&nbsp;&nbsp;' + t.time : '');
   const titleRow = t.title ? `<div class="card-title-row">${t.title}</div>` : '';
   return `<div class="card" style="margin-bottom:0">
-    <div class="card-top">
+    <div class="card-top" onclick="openView('${t.id}')">
       ${thumb}
       <div class="card-info">
         ${titleRow}
@@ -578,7 +628,7 @@ $('btn-new').addEventListener('click', () => openForm(null));
 async function delTest(id) {
   showConfirm('Usunac ten test? Operacja nieodwracalna.', async () => {
     tests = tests.filter(t => t.id !== id);
-    try { await pushTests(); renderList(); } catch(_) {}
+    try { await pushTests(); renderList(); showScreen('s-list'); } catch(_) {}
   });
 }
 
@@ -686,10 +736,11 @@ $('inp-lib').addEventListener('change', e => { handleFiles(e.target.files); e.ta
 
 // ── FORM OPEN ─────────────────────────────────
 function openForm(id) {
-  editId = id; photos = []; wgData = []; wgCtr = 0;
+  editId = id; wgData = []; wgCtr = 0;
   $('form-title').textContent = id ? 'EDYCJA' : 'NOWY TEST';
 
   const t   = id ? tests.find(x => x.id === id) : null;
+  photos = t?.photos ? [...t.photos] : [];
   const src = t || (tests.length ? tests[0] : null); // source for copying config
 
   // Title
@@ -781,6 +832,136 @@ $('btn-save').addEventListener('click', async () => {
 });
 
 $('btn-back').addEventListener('click', () => showScreen('s-list'));
+
+// ── VIEW ──────────────────────────────────────
+let viewId = null;
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function openView(id) {
+  viewId = id;
+  const t = tests.find(x => x.id === id);
+  if (!t) return;
+  $('view-title').textContent = t.title || t.date || 'Test';
+
+  const mv = val => (val !== '' && val != null) ? String(val) : null;
+  const fld = (lbl, val) => {
+    const v = mv(val);
+    return `<div class="view-field"><div class="view-label">${lbl}</div><div class="view-val${v ? '' : ' muted'}">${v || '—'}</div></div>`;
+  };
+
+  const gcCls = t.gas === 'czerwony' ? 'chip-red' : t.gas === 'green' ? 'chip-green' : 'chip-dark';
+  const windCls = (t.wind && t.wind !== 'zero') ? 'chip-wind' : 'chip-dark';
+
+  let html = '';
+
+  // Warunki
+  html += `<div class="view-sec">
+    <div class="view-sec-title">Warunki</div>
+    <div class="view-grid">
+      ${fld('Data', t.date)}
+      ${fld('Czas', t.time)}
+      ${fld('Temperatura \u00b0C', t.temp)}
+      ${fld('Ci\u015bnienie bar', t.pressure)}
+    </div>
+    <div class="view-grid" style="margin-top:10px;">
+      <div class="view-field"><div class="view-label">Wiatr</div>
+        <div class="view-val">${t.wind ? `<span class="chip ${windCls}">${t.wind}</span>` : '<span class="view-val muted">\u2014</span>'}</div></div>
+      <div class="view-field"><div class="view-label">Gaz</div>
+        <div class="view-val">${t.gas ? `<span class="chip ${gcCls}">${t.gas}</span>` : '<span class="view-val muted">\u2014</span>'}</div></div>
+    </div>
+  </div>`;
+
+  // Konfiguracja kartridża
+  html += `<div class="view-sec">
+    <div class="view-sec-title">Konfiguracja kartrid\u017ca</div>
+    <div class="view-grid">
+      ${fld('Liczba luf', t.barrels)}
+      ${fld('\u2300 fi mm', t.diameter)}
+      ${fld('D\u0142ugo\u015b\u0107 mm', t.length)}
+      ${fld('K\u0105t \u00b0', t.angle)}
+    </div>
+  </div>`;
+
+  // Ciężarki
+  const wgHtml = (t.weights && t.weights.length)
+    ? t.weights.map(g => {
+        const desc = (g.qty && g.mass) ? `${g.qty}\u202f\u00d7\u202f${g.mass}\u202fg`
+                   : g.qty ? `${g.qty} szt.`
+                   : g.mass ? `${g.mass} g` : '\u2014';
+        const mat = g.mat ? `<span class="view-wg-badge">${g.mat}</span>` : '';
+        const cen = g.central ? `<span class="view-wg-badge" style="color:var(--blue);border-color:#bfdbfe;background:#eff6ff;">centralny</span>` : '';
+        return `<div class="view-wg-item"><div class="view-wg-row"><span style="font-weight:600;">${desc}</span>${mat}${cen}</div></div>`;
+      }).join('')
+    : `<div class="view-val muted">Brak ci\u0119\u017carków</div>`;
+
+  html += `<div class="view-sec">
+    <div class="view-sec-title">Ci\u0119\u017carki</div>
+    ${wgHtml}
+  </div>`;
+
+  // Zaślepka i linki
+  html += `<div class="view-sec">
+    <div class="view-sec-title">Za\u015blepka i linki</div>
+    <div class="view-grid">
+      ${fld('Za\u015blepka', t.plug)}
+      ${fld('D\u0142ugo\u015b\u0107 linek m', t.lineLength)}
+    </div>
+    <div class="view-grid" style="margin-top:10px;">
+      ${fld('Kolor linek', t.lineColor)}
+      <div></div>
+    </div>
+    ${t.plugOther ? `<div style="margin-top:8px;">${fld('Opis za\u015blepki', t.plugOther)}</div>` : ''}
+  </div>`;
+
+  // Wyniki
+  html += `<div class="view-sec">
+    <div class="view-sec-title">Wyniki</div>
+    <div class="view-grid">
+      ${fld('Donos\u0142o\u015b\u0107 m', t.range)}
+      ${fld('Rozk\u0142ad linek', t.linesLayout)}
+    </div>
+    ${t.observations ? `<div style="margin-top:10px;"><div class="view-label">Obserwacje</div><div class="view-val" style="white-space:pre-wrap;line-height:1.5;font-weight:400;font-size:0.88rem;margin-top:3px;">${escHtml(t.observations)}</div></div>` : ''}
+  </div>`;
+
+  // Notatki
+  if (t.notes) {
+    html += `<div class="view-sec">
+      <div class="view-sec-title">Notatki / pomys\u0142y</div>
+      <div class="view-val" style="white-space:pre-wrap;line-height:1.5;font-weight:400;font-size:0.88rem;">${escHtml(t.notes)}</div>
+    </div>`;
+  }
+
+  // Zdjęcia
+  if (t.photos && t.photos.length) {
+    html += `<div class="view-sec">
+      <div class="view-sec-title">Zdj\u0119cia (${t.photos.length})</div>
+      <div class="view-photo-grid">
+        ${t.photos.map((src, i) => `<div class="view-photo-cell"><img src="${src}" alt="" onclick="openLightbox(${i})"></div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  $('view-body').innerHTML = html;
+  showScreen('s-view');
+}
+
+$('btn-view-close').addEventListener('click', () => showScreen('s-list'));
+$('btn-view-edit').addEventListener('click', () => openForm(viewId));
+$('btn-view-del').addEventListener('click', () => delTest(viewId));
+
+// ── LIGHTBOX ──────────────────────────────────
+function openLightbox(i) {
+  const t = tests.find(x => x.id === viewId);
+  if (!t || !t.photos) return;
+  $('lb-img').src = t.photos[i];
+  $('lightbox').classList.remove('hidden');
+}
+function closeLightbox() { $('lightbox').classList.add('hidden'); $('lb-img').src = ''; }
+$('lb-close').addEventListener('click', closeLightbox);
+$('lightbox').addEventListener('click', e => { if (e.target !== $('lb-img')) closeLightbox(); });
 
 // ── INIT ──────────────────────────────────────
 async function init() { await fetchTests(); renderList(); }
